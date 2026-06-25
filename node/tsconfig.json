@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",                       // Excelente suporte nativo no Node moderno
+    "module": "NodeNext",                     // Padrão atual para resoluções ESM/CJS em 2026
+    "moduleResolution": "NodeNext",           // Otimizado para Vite, Webpack, Rspack, etc.
+    "noEmit": true,                           // Desabilita o emit de arquivos JS   
+    "allowImportingTsExtensions": true,       // Permite importar arquivos .ts diretamente (se o bundler aceitar)
+    
+    /* Segurança e Tipagem */
+    "strict": true,                           // Ativa todas as checagens rigorosas
+    "noImplicitReturns": true,                // Garante que todas as funções retornem algo
+    "noUnusedLocals": true,                   // Erro para variáveis não usadas
+    "noUnusedParameters": true,               // Erro para parâmetros não usados
+    
+    /* Configurações de Compilação */
+    "outDir": "./dist",                       // Onde o código JS compilado vai ficar
+    "rootDir": "./src",                       // Onde está seu código TS
+    "sourceMap": true,                        // Facilita o debugging
+    "skipLibCheck": true,                     // Ignora checagem de tipos em node_modules (mais rápido)
+    "esModuleInterop": true,                  // Melhora compatibilidade com pacotes antigos
+    "forceConsistentCasingInFileNames": true, // Evita problemas de maiúsculas/minúsculas entre OS
+
+    "types": ["node"]                         // Inclui tipos do Node.js
+
+  },
+  "include": ["src/**/*", "prisma.config.ts", "prisma.config.mjs"],
+  "exclude": ["node_modules", "dist"]
+}

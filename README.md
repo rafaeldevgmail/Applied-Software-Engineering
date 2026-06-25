@@ -65,6 +65,58 @@ The current schema includes the following relational entities:
 
 ---
 
+## Async Report System
+
+### Architecture
+
+```
+POST /api/relatorio
+  → ReportController (src/controllers/reportController.ts)
+    → ReportService.triggerReportGeneration (src/services/reportService.ts)
+      1. Creates PostgreSQL record (status: "todo")
+      2. Adds job to queue: reportQueue.add("gerar-pdf-clientes", { taskId, userId })
+
+[Redis] ──► reportWorker (src/workers/reportWorker.ts)
+              → ReportService.processGeneratedData(taskId, userId, jobId)
+                1. Updates task to "in_progress"
+                2. Fetches clients from database
+                3. Processes (simulated with 5s delay)
+                4. Updates task to "done"
+```
+
+### Components
+
+1. **Queue** (`src/queues/reportQueue.ts`): Defines the `"relatorios-queue"` connected to Redis. Exports a singleton instance.
+
+2. **Worker** (`src/workers/reportWorker.ts`): Listens to the same queue. Extracts `taskId` and `userId` from `job.data` and calls `reportService.processGeneratedData()`. Has listeners for `completed` and `failed`.
+
+3. **Worker bootstrap** (`src/workers/index.ts`): Starts the worker. Run via `npm run start:workers` (command: `tsx src/workers/index.ts`).
+
+4. **Producer** (`src/services/reportService.ts`): `triggerReportGeneration` persists the task in Postgres and enqueues the job in Redis with `reportQueue.add("gerar-pdf-clientes", data)`.
+
+### Complete Flow
+
+1. Client sends `POST /api/relatorio`
+2. Controller returns HTTP **202 Accepted** with the `taskId` (immediate response, non-blocking)
+3. In background, the worker picks the job from Redis and processes it (updates status in Postgres: `todo → in_progress → done`)
+
+### Characteristics
+
+- **No scheduling (cron)**: Jobs are created on demand, only via HTTP request
+- **Single active queue**: `relatorios-queue` with one job: `gerar-pdf-clientes`
+- **Concurrency**: By default, BullMQ processes **5 simultaneous jobs** per worker (configurable via `concurrency: N` in the constructor)
+- **Retry**: No explicit configuration — uses BullMQ defaults (automatic attempts with backoff)
+- **Redis as backbone**: Both the queue and messages go through Redis (`redis:7-alpine` service in docker-compose)
+
+### Running Locally
+
+Two separate processes:
+
+- **API**: `npm start` (or `npm run dev`)
+- **Worker**: `npm run start:workers`
+
+---
+
 ## How to Run
 
 ### Prerequisites
@@ -136,51 +188,62 @@ npm test
 ## Node.js Project Structure
 
 ```
-├── app.js                        # Express configuration (middlewares, routes)
-├── server.js                     # Entry point (server initialization)
-├── config/
-│   └── redisConfig.js            # Redis connection config (ioredis)
-├── controllers/
-│   ├── authController.js         # Login and registration (JWT + bcrypt)
-│   ├── reportController.js       # Endpoint to trigger async report
-│   └── userController.js         # User CRUD (with injected repository)
-├── errors/
-│   ├── AppError.ts               # Custom error base class
-│   └── EmailInUseError.ts        # Semantic duplicate email error
-├── factories/                    # Factories for object creation (future)
-├── lib/
-│   └── prisma.js                 # PrismaClient singleton with adapter-pg
-├── middlewares/
-│   └── authMiddleware.js         # JWT token verification middleware
-├── prisma/
-│   ├── schema.prisma             # Full schema (User, Client, Task, Session, Token)
-│   ├── seed.js                   # Seed with faker (5 clients + mock tasks)
-│   └── migrations/               # Versioned Prisma migrations
-├── queues/
-│   └── reportQueue.js            # BullMQ queue definition (reports-queue)
-├── repositories/
-│   ├── user.repository.interface.js   # IUserRepository interface (contract)
-│   └── prisma/
-│       └── user.prisma.repository.js  # Concrete Prisma implementation
-├── routes/
-│   ├── authRoutes.js             # POST /login, POST /register
-│   ├── reportRoutes.js           # POST /api/report
-│   └── userRoutes.js             # CRUD /users
-├── services/
-│   └── reportService.js          # Business logic: create task + enqueue job
-├── tests/
-│   └── integration/
-│       ├── report.spec.js        # Integration test (Vitest) for report queue
-│       └── queue.test.js         # Sandbox script for manual queue testing
-├── workers/
-│   ├── index.js                  # Workers entry point
-│   └── reportWorker.js           # BullMQ worker: processes report generation
-├── dockerfile                    # Node 20 Alpine image
-├── docker-compose.yml            # 3 services: app, db (PostgreSQL 15), redis (Redis 7)
-├── prisma.config.ts              # TypeScript Prisma config
-├── prisma.config.mjs             # ESM Prisma config
-├── package.json
-└── .env                          # Environment variables (not versioned)
+📁 root/
+├── ⚙️ .env                          # Environment variables
+├── 🔒 .gitignore                    # Git exclusion rules
+├── 🐳 .dockerignore                 # Docker build exclusions
+├── 🐳 docker-compose.yml            # 3 services: app, db, redis
+├── 🐳 dockerfile                    # Node 20 Alpine build
+├── 📦 package.json                  # Project manifest & scripts
+├── 💎 prisma.config.ts              # Prisma ORM configuration
+├── ⚙️ tsconfig.json                 # TypeScript configuration
+├── 📂 .vscode/
+│   ├── 🔧 launch.json               # Docker debug attach config
+│   └── ⚙️ settings.json             # Workspace settings
+└── 📂 src/
+    ├── ⚙️ app.ts                    # Express configuration (middlewares, routes)
+    ├── 🚀 server.ts                 # Entry point (server initialization)
+    ├── 📂 config/
+    │   ├── ⚙️ env.ts                # Env var validation & export
+    │   ├── 🔗 redisConfig.ts        # Redis connection config
+    │   └── 📊 bullBoard.ts          # Bull Board UI setup
+    ├── 📂 controllers/
+    │   ├── 🔑 authController.ts     # Login and registration (JWT + bcrypt)
+    │   ├── 📋 reportController.ts   # Endpoint to trigger async report
+    │   └── 👤 userController.ts     # User CRUD (with injected repository)
+    ├── 📂 errors/
+    │   ├── ⚠️ AppError.ts           # Base error class
+    │   ├── 📧 EmailInUseError.ts    # Semantic duplicate email error
+    │   └── 🗃️ prismaErrorHandler.ts # Prisma error formatter
+    ├── 📂 lib/
+    │   └── 🗄️ prisma.ts             # PrismaClient singleton with adapter-pg
+    ├── 📂 middlewares/
+    │   ├── 🪪 authMiddleware.ts     # JWT token verification middleware
+    │   └── 🚨 errorMiddleware.ts    # Global error handler
+    ├── 💎 prisma/
+    │   ├── 📊 schema.prisma         # User/Client/Task/Session models
+    │   ├── 🌱 seed.ts               # Database seeder with faker
+    │   └── 🗄️ migrations/           # Versioned Prisma migrations
+    ├── 📂 queues/
+    │   └── 📤 reportQueue.ts        # BullMQ queue definition (reports-queue)
+    ├── 📂 repositories/
+    │   ├── 📄 user.repository.interface.ts   # IUserRepository interface (contract)
+    │   └── 💎 prisma/
+    │       └── 💾 user.prisma.repository.tsx # Concrete Prisma implementation
+    ├── 📂 routes/
+    │   ├── 🔑 authRoutes.ts         # POST /login, /register
+    │   ├── 📋 reportRoutes.ts       # POST /relatorio
+    │   └── 👤 userRoutes.ts         # CRUD /users
+    ├── 📂 services/
+    │   └── ⚙️ reportService.ts      # Business logic: create task + enqueue job
+    ├── 🧪 tests/integration/
+    │   ├── ✅ report.spec.ts        # Integration test (Vitest) for report queue
+    │   └── 🧪 queue.test.ts         # Sandbox script for manual queue testing
+    ├── 📂 use-cases/                # Empty - future Use Cases
+    ├── 📂 factories/                # Empty - future Factories for object creation
+    └── 🏃 workers/
+        ├── 🚀 index.ts              # Worker orchestration entry point
+        └── ⚙️ reportWorker.ts       # BullMQ worker: background processes report generation 
 ```
 
 ---
