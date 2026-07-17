@@ -1,0 +1,370 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --color-alice-blue: #f0f8ff;
+  --color-antique-white: #faebd7;
+  --color-aqua: #00ffff;
+  --color-aquamarine: #7fffd4;
+  --color-azure: #f0ffff;
+  --color-beige: #f5f5dc;
+  --color-bisque: #ffe4c4;
+  --color-black: #000000;
+  --color-blanched-almond: #ffebcd;
+  --color-blue: #0000ff;
+  --color-blue-violet: #8a2be2;
+  --color-brown: #a52a2a;
+  --color-burly-wood: #deb887;
+  --color-cadet-blue: #5f9ea0;
+  --color-chartreuse: #7fff00;
+  --color-chocolate: #d2691e;
+  --color-coral: #ff7f50;
+  --color-cornflower-blue: #6495ed;
+  --color-cornsilk: #fff8dc;
+  --color-crimson: #dc143c;
+  --color-cyan: #00ffff;
+  --color-dark-blue: #00008b;
+  --color-dark-cyan: #008b8b;
+  --color-dark-golden-rod: #b8860b;
+  --color-dark-gray: #a9a9a9;
+  --color-dark-green: #006400;
+  --color-dark-grey: #a9a9a9;
+  --color-dark-khaki: #bdb76b;
+  --color-dark-magenta: #8b008b;
+  --color-dark-olive-green: #556b2f;
+  --color-dark-orange: #ff8c00;
+  --color-dark-orchid: #9932cc;
+  --color-dark-red: #8b0000;
+  --color-dark-salmon: #e9967a;
+  --color-dark-sea-green: #8fbc8f;
+  --color-dark-slate-blue: #483d8b;
+  --color-dark-slate-gray: #2f4f4f;
+  --color-dark-slate-grey: #2f4f4f;
+  --color-dark-turquoise: #00ced1;
+  --color-dark-violet: #9400d3;
+  --color-deep-pink: #ff1493;
+  --color-deep-sky-blue: #00bfff;
+  --color-dim-gray: #696969;
+  --color-dim-grey: #696969;
+  --color-dodger-blue: #1e90ff;
+  --color-fire-brick: #b22222;
+  --color-floral-white: #fffaf0;
+  --color-forest-green: #228b22;
+  --color-fuchsia: #ff00ff;
+  --color-gainsboro: #dcdcdc;
+  --color-ghost-white: #f8f8ff;
+  --color-gold: #ffd700;
+  --color-golden-rod: #daa520;
+  --color-gray: #808080;
+  --color-green: #008000;
+  --color-green-yellow: #adff2f;
+  --color-grey: #808080;
+  --color-honey-dew: #f0fff0;
+  --color-hot-pink: #ff69b4;
+  --color-indian-red: #cd5c5c;
+  --color-indigo: #4b0082;
+  --color-ivory: #fffff0;
+  --color-khaki: #f0e68c;
+  --color-lavender: #e6e6fa;
+  --color-lavender-blush: #fff0f5;
+  --color-lawn-green: #7cfc00;
+  --color-lemon-chiffon: #fffacd;
+  --color-light-blue: #add8e6;
+  --color-light-coral: #f08080;
+  --color-light-cyan: #e0ffff;
+  --color-light-golden-rod-yellow: #fafad2;
+  --color-light-gray: #d3d3d3;
+  --color-light-green: #90ee90;
+  --color-light-grey: #d3d3d3;
+  --color-light-pink: #ffb6c1;
+  --color-light-purple: #aa81ff;
+  --color-light-salmon: #ffa07a;
+  --color-light-sea-green: #20b2aa;
+  --color-light-sky-blue: #87cefa;
+  --color-light-slate-gray: #778899;
+  --color-light-slate-grey: #778899;
+  --color-light-steel-blue: #b0c4de;
+  --color-light-yellow: #ffffe0;
+  --color-lime: #00ff00;
+  --color-lime-green: #32cd32;
+  --color-linen: #faf0e6;
+  --color-magenta: #ff00ff;
+  --color-maroon: #800000;
+  --color-medium-aqua-marine: #66cdaa;
+  --color-medium-blue: #0000cd;
+  --color-medium-orchid: #ba55d3;
+  --color-medium-purple: #9370db;
+  --color-medium-sea-green: #3cb371;
+  --color-medium-slate-blue: #7b68ee;
+  --color-medium-spring-green: #00fa9a;
+  --color-medium-turquoise: #48d1cc;
+  --color-medium-violet-red: #c71585;
+  --color-midnight-blue: #191970;
+  --color-mint-cream: #f5fffa;
+  --color-misty-rose: #ffe4e1;
+  --color-moccasin: #ffe4b5;
+  --color-navajo-white: #ffdead;
+  --color-navy: #000080;
+  --color-old-lace: #fdf5e6;
+  --color-olive: #808000;
+  --color-olive-drab: #6b8e23;
+  --color-orange: #ffa500;
+  --color-orange-red: #ff4500;
+  --color-orchid: #da70d6;
+  --color-pale-golden-rod: #eee8aa;
+  --color-pale-green: #98fb98;
+  --color-pale-turquoise: #afeeee;
+  --color-pale-violet-red: #db7093;
+  --color-papaya-whip: #ffefd5;
+  --color-peach-puff: #ffdab9;
+  --color-peru: #cd853f;
+  --color-pink: #ffc0cb;
+  --color-plum: #dda0dd;
+  --color-powder-blue: #b0e0e6;
+  --color-purple: #800080;
+  --color-rebecca-purple: #663399;
+  --color-red: #ff0000;
+  --color-rosy-brown: #bc8f8f;
+  --color-royal-blue: #4169e1;
+
+  --animate-overlay-in: overlayIn 0.4s ease-out;
+  --animate-overlay-out: overlayOut 0.4s ease-in;
+  --animate-dialog-in: dialogContentIn 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-dialog-out: dialogContentOut 0.5s ease-in;
+}
+:root {
+  --scale-0: 1.5; /*1*/
+  --scale-50: 1.4; /*0.9*/
+  --scale-100: 1.6; /*1.1*/
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+.btn-custom {
+  @apply bg-sky-500 text-white px-4 py-2 cursor-pointer font-semibold rounded-full shadow-md hover:bg-sky-600 transition transition-colors;
+}
+
+ul li {
+  @apply flex py-4 first:pt-0 last:pb-0;
+}
+ul li p.title {
+  @apply text-sm font-medium text-gray-900 dark:text-white;
+}
+ul li p.desc {
+  @apply truncate text-sm text-gray-500 dark:text-gray-400;
+}
+
+/* Configuração de Fontes */
+body {
+  font-family: "Inter", sans-serif;
+}
+h1,
+h2,
+h3,
+.font-title {
+  font-family: "Outfit", sans-serif;
+}
+
+/* ------------------------------------------------------------------
+    SEPARAÇÃO DAS CLASSES TAILWIND (DIRETIVAS @apply SEMANTICAS)
+    Aqui definimos classes personalizadas que agrupam o Tailwind
+    para manter o HTML limpo e focado na estrutura.
+    ------------------------------------------------------------------ */
+
+/* Fundo Dinâmico e Líquido */
+.liquid-bg {
+  @apply min-h-screen bg-[#0f0c1b] text-slate-100 overflow-x-hidden relative flex items-center justify-center p-4 md:p-8;
+}
+
+/* Orbes Orgânicos (Efeito Líquido de Fundo) */
+.liquid-orb-1 {
+  top: 10%;
+  left: 15%;
+  animation: float1 12s ease-in-out infinite alternate;
+}
+
+.liquid-orb-2 {
+  bottom: 15%;
+  right: 10%;
+  animation: float2 16s ease-in-out infinite alternate;
+}
+
+.liquid-orb-3 {
+  top: 50%;
+  left: 45%;
+  animation: float3 10s ease-in-out infinite alternate;
+}
+
+/* Efeito Principal: Liquid Glass Card (Vidro Fluido) */
+.glass-container {
+  @apply w-full rounded-3xl border border-white/10 bg-white/5 backdrop-blur-[24px] shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] overflow-hidden z-10;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.2),
+    0 20px 50px rgba(0, 0, 0, 0.4);
+}
+
+/* Sub-elementos de vidro com diferentes níveis de reflexo */
+.glass-card {
+  @apply rounded-2xl border border-white/10 bg-white/5 backdrop-blur-[12px] p-6 transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:-translate-y-1;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.glass-sidebar {
+  @apply border-r border-white/10 bg-white/2 backdrop-blur-[16px] p-6 flex flex-col justify-between;
+}
+
+/* Inputs e Controles em Vidro */
+.glass-input {
+  @apply w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-400 outline-none focus:border-purple-400/50 focus:ring-2 focus:ring-purple-400/20 transition-all duration-300;
+}
+
+/* Botões Liquid Glass */
+.glass-btn-primary {
+  @apply relative overflow-hidden rounded-xl px-6 py-3 font-medium text-sm text-white bg-gradient-to-r from-purple-500/80 to-indigo-500/80 hover:from-purple-500 hover:to-indigo-500 border border-white/10 hover:border-white/20 shadow-lg hover:shadow-purple-500/20 transition-all duration-300 active:scale-95 flex items-center justify-center gap-2;
+}
+
+.glass-btn-secondary {
+  @apply rounded-xl px-5 py-3 font-medium text-sm text-black dark:text-white  bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 transition-all duration-300 flex items-center justify-center gap-2;
+}
+
+/* Itens de Menu Ativos e Inativos */
+.menu-link {
+  @apply flex items-center gap-3 px-4 py-3 rounded-xl text-gray-500 dark:text-gray-500 hover:text-black hover:dark:text-white hover:bg-white/5 transition-all duration-200;
+}
+
+.menu-link-active {
+  @apply flex items-center gap-3 px-4 py-3 rounded-xl text-blue-violet dark:text-light-purple bg-white/10 border border-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)];
+}
+
+/* Tags de Status */
+.status-badge-active {
+  @apply text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1 w-max;
+}
+
+.status-badge-pending {
+  @apply text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-1 w-max;
+}
+.status-badge-info {
+  @apply text-xs font-semibold px-2.5 py-1 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20 flex items-center gap-1 w-max;
+}
+
+.status-badge-danger {
+  @apply text-xs font-semibold px-2.5 py-1 rounded-full bg-red-500/10 text-red-400 border border-red-500/20 flex items-center gap-1 w-max;
+}
+
+/* ------------------------------------------------------------------
+    Animações Personalizadas para o efeito Líquido Flutuante
+    ------------------------------------------------------------------ */
+@keyframes float1 {
+  0% {
+    transform: translate(0px, 0px) scale(var(--scale-0));
+  }
+  50% {
+    transform: translate(50px, 40px) scale(var(--scale-100)) rotate(15deg);
+  }
+  100% {
+    transform: translate(-20px, -30px) scale(var(--scale-50)) rotate(-10deg);
+  }
+}
+
+@keyframes float2 {
+  0% {
+    transform: translate(0px, 0px) scale(var(--scale-0));
+  }
+  50% {
+    transform: translate(-60px, 30px) scale(var(--scale-50)) rotate(-15deg);
+  }
+  100% {
+    transform: translate(40px, -50px) scale(var(--scale-100)) rotate(20deg);
+  }
+}
+
+@keyframes float3 {
+  0% {
+    transform: translate(0px, 0px) scale(var(--scale-100)) rotate(0deg);
+  }
+  50% {
+    transform: translate(30px, -40px) scale(var(--scale-50)) rotate(180deg);
+  }
+  100% {
+    transform: translate(-30px, 20px) scale(var(--scale-0)) rotate(360deg);
+  }
+}
+
+/* Animações de entrada/saída do Dialog 3D */
+@keyframes overlayIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes overlayOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes dialogContentIn {
+  from {
+    opacity: 0;
+    transform: perspective(500px) rotateX(-20deg) scale(0.8);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(500px) rotateX(0deg) scale(1);
+    filter: blur(0px);
+  }
+}
+
+@keyframes dialogContentOut {
+  from {
+    opacity: 1;
+    transform: perspective(500px) rotateX(0deg) scale(1);
+    filter: blur(0px);
+  }
+  to {
+    opacity: 0;
+    transform: perspective(500px) rotateX(20deg) scale(0.8);
+    filter: blur(4px);
+  }
+}
+
+/* Custom Scrollbar para navegadores modernos */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}

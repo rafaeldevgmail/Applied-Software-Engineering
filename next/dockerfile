@@ -1,0 +1,22 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copia apenas os arquivos de dependências primeiro (otimiza o cache do Docker)
+COPY package.json package-lock.json* ./
+
+# Instala todas as dependências (incluindo as de desenvolvimento necessárias para o Next.js)
+RUN npm install
+
+# Copia o restante dos arquivos do projeto
+COPY . .
+
+# Expõe a porta padrão do Next.js
+EXPOSE 4000
+
+# Variável de ambiente configurada para desenvolvimento
+ENV NODE_ENV=development
+ENV PORT=4000
+
+# Comando para iniciar o Next.js em modo dev
+CMD ["npm", "run", "dev"]

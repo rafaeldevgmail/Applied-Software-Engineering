@@ -5,16 +5,16 @@
   "license": "ISC",
   "author": "",
   "type": "module",
-  "main": "src/server.ts",
+  "main": "src/shared/infra/http/server.ts",
   "scripts": {
-    "dev": "tsx src/server.ts",
-    "debug": "node --import tsx --inspect=0.0.0.0:9229 src/server.ts",
-    "dev:watch": "tsx watch src/server.ts",
+    "dev": "tsx src/shared/infra/http/server.ts",
+    "debug": "node --import tsx --inspect=0.0.0.0:9229 --watch src/shared/infra/http/server.ts",
+    "dev:watch": "tsx watch src/shared/infra/http/server.ts",
     "test": "npx prisma generate && vitest run",
     "test:watch": "npx prisma generate && npx tsx src/tests/integration/queue.test.ts",
     "db:seed": "npx prisma generate && node src/prisma/seed.ts",
-    "start:workers": "tsx src/workers/index.ts",
-    "start": "tsx src/server.ts"
+    "start:workers": "tsx src/shared/infra/workers/index.ts",
+    "start": "tsx src/shared/infra/http/server.ts"
   },
   "prisma": {
     "seed": "node src/prisma/seed.ts"
@@ -31,6 +31,7 @@
     "express": "^5.2.1",
     "ioredis": "^5.10.1",
     "jsonwebtoken": "^9.0.3",
+    "nodemailer": "^9.0.3",
     "pg": "^8.21.0",
     "stripe": "^22.1.1",
     "zod": "^4.4.3"

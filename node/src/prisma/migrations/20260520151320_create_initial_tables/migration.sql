@@ -8,7 +8,6 @@ CREATE TABLE "users" (
     "remember_token" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
-
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
 
@@ -25,7 +24,6 @@ CREATE TABLE "clients" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "deleted_at" TIMESTAMP(3),
-
     CONSTRAINT "clients_pkey" PRIMARY KEY ("id")
 );
 
@@ -42,7 +40,6 @@ CREATE TABLE "tasks" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "deleted_at" TIMESTAMP(3),
-
     CONSTRAINT "tasks_pkey" PRIMARY KEY ("id")
 );
 
@@ -54,43 +51,23 @@ CREATE TABLE "sessions" (
     "user_agent" TEXT,
     "payload" TEXT NOT NULL,
     "last_activity" INTEGER NOT NULL,
-
     CONSTRAINT "sessions_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "personal_access_tokens" (
-    "id" SERIAL NOT NULL,
-    "tokenable_type" TEXT NOT NULL,
-    "tokenable_id" INTEGER NOT NULL,
-    "name" TEXT NOT NULL,
-    "token" VARCHAR(64) NOT NULL,
-    "abilities" TEXT,
-    "last_used_at" TIMESTAMP(3),
-    "expires_at" TIMESTAMP(3),
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "personal_access_tokens_pkey" PRIMARY KEY ("id")
-);
+-- CreateIndex
+CREATE UNIQUE INDEX "users_email_key" ON "users" ("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
-
--- CreateIndex
-CREATE UNIQUE INDEX "clients_email_key" ON "clients"("email");
-
--- CreateIndex
-CREATE UNIQUE INDEX "personal_access_tokens_token_key" ON "personal_access_tokens"("token");
+CREATE UNIQUE INDEX "clients_email_key" ON "clients" ("email");
 
 -- AddForeignKey
-ALTER TABLE "clients" ADD CONSTRAINT "clients_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "clients" ADD CONSTRAINT "clients_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "tasks" ADD CONSTRAINT "tasks_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "tasks" ADD CONSTRAINT "tasks_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "tasks" ADD CONSTRAINT "tasks_client_id_fkey" FOREIGN KEY ("client_id") REFERENCES "clients"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "tasks" ADD CONSTRAINT "tasks_client_id_fkey" FOREIGN KEY ("client_id") REFERENCES "clients" ("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE ON UPDATE CASCADE;

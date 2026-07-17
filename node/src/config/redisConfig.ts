@@ -1,5 +1,5 @@
 import Redis from "ioredis";
-import { env } from "./env.ts";
+import { env } from "@/config/env.ts";
 
 export const redisConfig = {
   host: env.REDIS_HOST,

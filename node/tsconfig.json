@@ -2,6 +2,9 @@
   "compilerOptions": {
     "target": "ES2022",                       // Excelente suporte nativo no Node moderno
     "module": "NodeNext",                     // Padrão atual para resoluções ESM/CJS em 2026
+    "paths": {
+      "@/*": ["./src/*"]                        // Qualquer import começando com @/ deve olhar para src/
+    },
     "moduleResolution": "NodeNext",           // Otimizado para Vite, Webpack, Rspack, etc.
     "noEmit": true,                           // Desabilita o emit de arquivos JS   
     "allowImportingTsExtensions": true,       // Permite importar arquivos .ts diretamente (se o bundler aceitar)

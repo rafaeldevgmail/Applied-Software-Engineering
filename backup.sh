@@ -15,14 +15,25 @@ fi
 # 3. Define o local de destino e captura a data/hora atual
 PASTA_DESTINO="Recovery/$PASTA_ORIGEM"
 DATA_HORA=$(date +"%Y-%m-%d %H-%M")
-NOME_FINAL_PASTA="$PASTA_ORIGEM $DATA_HORA"
+NOME_FINAL_PASTA=""
 
-# 4. Cria a estrutura de pastas destino (o -p garante que cria Recovery/ e a subpasta se não existirem)
+# 4. Pergunta ao usuário se deseja adicionar uma descrição ao nome do arquivo de backup
+read -p "Digite a descrição do arquivo de backup: " descricao
+
+# Verifica a resposta do usuário
+if [[ $descricao ]]; then
+    NOME_FINAL_PASTA="$PASTA_ORIGEM $DATA_HORA - $descricao"
+else
+    NOME_FINAL_PASTA="$PASTA_ORIGEM $DATA_HORA"
+fi
+
+# 5. Cria a estrutura de pastas destino (o -p garante que cria Recovery/ e a subpasta se não existirem)
 mkdir -p "$PASTA_DESTINO/$NOME_FINAL_PASTA"
 
-# 5. Copia todo o conteúdo da pasta de origem para dentro da nova pasta com data e hora
-# -r (recursivo, para subpastas) e -p (preserva permissões de arquivos)
-cp -rp "$PASTA_ORIGEM/." "$PASTA_DESTINO/$NOME_FINAL_PASTA/"
+# 6. Copia todo o conteúdo da pasta de origem para dentro da nova pasta com data e hora
+# -a (archive) copia tudo, -r (recursive) copia pastas, -v (verbose) mostra o progresso
+rsync -a --info=progress2 --exclude='node_modules' --exclude='.next' --exclude='.vscode' "$PASTA_ORIGEM/" "$PASTA_DESTINO/$NOME_FINAL_PASTA/"
+
 
 echo "--------------------------------------------------------"
 echo "✅ Sucesso! Conteúdo de '$PASTA_ORIGEM' copiado para:"
