@@ -14,6 +14,14 @@
 
 Frontend dashboard built with **Next.js 16 (App Router)** as a showcase project for **software engineering best practices** on the client side. The application features a custom glassmorphism design system, URL-driven modal architecture, form validation with Zod + react-hook-form, Server Components for data fetching, and full integration with the [Backend Node.js API](https://github.com/rafaeldevgmail/Applied-Software-Engineering).
 
+## Preview
+
+
+https://github.com/user-attachments/assets/1596fb35-bd48-4101-ab1f-0222689569a8
+
+
+https://github.com/user-attachments/assets/04b01f5c-d4b6-43e2-8fcf-0a4091f08180
+
 ---
 
 ## Stack
