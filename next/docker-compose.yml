@@ -1,0 +1,29 @@
+services:
+  web:
+    image: my-nextjs-app
+    user: "root"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nextjs_app
+    restart: always
+    ports:
+      - "4000:4000"
+    networks:
+      - app-network
+    environment:
+      - NODE_ENV=development
+      - PORT=4000
+    volumes:
+      # Sincroniza o código local com o container
+      - .:/app
+      # Evita que a pasta node_modules do container seja sobrescrita pela local (vazia ou de OS diferente)
+      - /app/node_modules
+      - /app/.next
+    command: sh -c "npm install && npm run dev"
+
+networks:
+  app-network:
+    #river: bridge # rede interna (no mesmo docker-compose.yml)
+    external: true # create the network before: docker network create app-network
+

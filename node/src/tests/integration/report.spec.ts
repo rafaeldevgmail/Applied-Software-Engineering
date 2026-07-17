@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ReportService } from "../../services/reportService.ts";
+import { ReportService } from "@/modules/reports/report.service.ts";
 
 describe("Fila de Relatórios (Integração)", () => {
   it("deve conseguir criar uma tarefa e mandar pro Redis com sucesso", async () => {

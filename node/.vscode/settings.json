@@ -1,2 +1,9 @@
 {
+  "window.title": "${dirty}${activeEditorShort}${separator}🟢 NODE.JS BACK",
+  "workbench.colorCustomizations": {       
+        "titleBar.activeBackground": "#47a46c",
+        "titleBar.activeForeground": "#e7e7e7",
+        "titleBar.inactiveBackground": "#69f19f",
+        "titleBar.inactiveForeground": "#00000099",              
+    },
 }

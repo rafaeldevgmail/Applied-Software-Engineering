@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { ReportService } from "../../services/reportService.ts"; // 👈 Voltando duas pastas (../..)
+import { ReportService } from "@/modules/reports/report.service.ts";
 
 // 1. Carrega as variáveis do .env (Banco e Redis)
 dotenv.config();

@@ -1,67 +1,399 @@
-#  🧪 Applied Software Engineering Practices
+# 🧪 Applied Software Engineering Practices
 
-## 1. Backend App: Node.js
+## FullStack App
+
+#### 1. Frontend application technologies: Next.js
+
+![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=next.js&logoColor=white) ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black) ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white) ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white) ![Zod](https://img.shields.io/badge/Zod-4-3E619D?logo=zod&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white) ![License](https://img.shields.io/badge/license-ISC-blue)
+
+#### 2. Backend application technologies: Node.js
 
 ![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?logo=node.js&logoColor=white) ![Express](https://img.shields.io/badge/Express-5.x-000000?logo=express&logoColor=white) ![Prisma](https://img.shields.io/badge/Prisma-7.x-2D3748?logo=prisma&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?logo=postgresql&logoColor=white) ![Redis](https://img.shields.io/badge/Redis-7-DC382D?logo=redis&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white) ![Vitest](https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white) ![License](https://img.shields.io/badge/license-ISC-blue)
 
-REST API built with Node.js as a showcase project for **software engineering best practices**. The code employs established design patterns (Repository Pattern, Dependency Injection, SOLID), asynchronous queue processing with BullMQ and Redis, relational database with Prisma ORM, and a fully containerized environment with Docker Compose.
+## 1. Frontend application: Next.js
+
+Frontend dashboard built with **Next.js 16 (App Router)** as a showcase project for **software engineering best practices** on the client side. The application features a custom glassmorphism design system, URL-driven modal architecture, form validation with Zod + react-hook-form, Server Components for data fetching, and full integration with the [Backend Node.js API](https://github.com/rafaeldevgmail/Applied-Software-Engineering).
 
 ---
 
 ## Stack
 
-| Category          | Technologies                                    |
-| ----------------- | ----------------------------------------------- |
-| **Runtime & Web**  | Node.js 20 (Alpine), Express 5                  |
-| **Database & ORM** | PostgreSQL 15, Prisma 7 (adapter-pg, migrations)|
-| **Queue & Cache**  | Redis 7, BullMQ, ioredis                        |
-| **DevOps**         | Docker, Docker Compose                          |
-| **Testing**        | Vitest, @faker-js/faker                         |
-| **Security**       | JWT (jsonwebtoken), bcrypt                      |
+| Category               | Technologies                                      |
+| ---------------------- | ------------------------------------------------- |
+| **Framework**          | Next.js 16 (App Router), React 19                 |
+| **Language**           | TypeScript 5 (strict mode)                        |
+| **Styling**            | Tailwind CSS v4 (CSS-first), Custom Glassmorphism |
+| **Forms & Validation** | react-hook-form 7 + Zod 4 + @hookform/resolvers   |
+| **Icons**              | FontAwesome 7, Lucide React                       |
+| **Animations**         | Motion (Framer successor), CSS 3D Perspectives    |
+| **Notifications**      | react-hot-toast                                   |
+| **Fonts**              | Geist, Geist Mono (next/font)                     |
+| **Containers**         | Docker, Docker Compose                            |
 
 ---
 
 **🏗️ Architecture & Best Practices:**
 
-- **Repository Pattern + DI**: `UserController` receives a repository via constructor, applying Dependency Injection. This enables Dependency Inversion, making the controller fully decoupled from the database. Simply swap the injection in routes to migrate from PostgreSQL to another database.
+- **Server Components + Client Components**: Pages like `dashboard/page.tsx` are async Server Components that fetch data directly from the backend API. Interactive modals and forms are marked `"use client"` — clear separation of concerns.
+- **URL-Driven Modals**: Modal state is encoded in URL search params (`?modal=true`, `?editId=1`, `?deleteId=1`, `?viewId=1`). This enables deep-linking, browser history support, and consistent state across refreshes.
+- **Dual Environment URLs**: The service layer auto-detects whether code runs on the server (Docker network: `http://node:3000`) or in the browser (`http://localhost:3000`), ensuring seamless connectivity in both contexts.
+- **Standalone Output**: `next.config.ts` sets `output: "standalone"` for optimized, self-contained Docker deployments.
+
+---
+
+## Pages & Routes
+
+| Route                        | Description                                                   |
+| ---------------------------- | ------------------------------------------------------------- |
+| `/`                          | Server Component — fetches users, redirects to dashboard      |
+| `/auth/login`                | Login modal with Zod validation, redirects to `/dashboard`    |
+| `/auth/register`             | Registration modal with Zod validation, redirects to login    |
+| `/dashboard`                 | Home — summary cards (Users, Clients) with avatar initials    |
+| `/dashboard/users`           | Full CRUD table — list, create, edit, view, delete via modals |
+| `GET /api/register/activate` | API Route — proxies email activation token to the backend     |
+
+---
+
+## Design System: Glassmorphism
+
+The entire UI is built on a **custom glassmorphism/liquid glass design system** defined in `globals.css` using Tailwind v4's CSS-first configuration:
+
+- **Animated Background**: Three gradient orbs (`float1`, `float2`, `float3`) with infinite keyframe animations creating a "liquid" floating effect
+- **Glass Containers**: `backdrop-blur`, translucent backgrounds, gradient borders, and inset shadows (`.glass-container`, `.glass-card`, `.glass-sidebar`)
+- **3D Modal Animations**: Entry/exit using CSS `perspective(500px) rotateX()` transforms with blur effects
+- **Dark Mode**: Automatic via `prefers-color-scheme: dark` media query
+- **Custom Scrollbar**: WebKit-style thin rounded scrollbar
+- **Color Palette**: 100+ named CSS variables (alice-blue, antique-white, etc.) defined in `@theme inline`
+
+### CSS Component Classes
+
+| Class                    | Purpose                                           |
+| ------------------------ | ------------------------------------------------- |
+| `.liquid-bg`             | Full-page animated gradient background            |
+| `.glass-container`       | Frosted glass panel with backdrop-blur            |
+| `.glass-card`            | Card variant with semi-transparent background     |
+| `.glass-sidebar`         | Sidebar-specific glass styling                    |
+| `.glass-input`           | Styled input fields                               |
+| `.glass-btn-primary`     | Primary action button                             |
+| `.glass-btn-secondary`   | Secondary action button                           |
+| `.menu-link` / `-active` | Navigation links with active route highlight      |
+| `.status-badge-*`        | Status indicators (active, pending, info, danger) |
+
+---
+
+## Components
+
+### Layout (`src/components/layout/`)
+
+| Component | Description                                                                                                                          |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `Header`  | Displays Next.js logo, page title (h1), and optional subtitle                                                                        |
+| `Sidebar` | Client component — navigation with active-route highlighting via `usePathname()`, app branding ("HDLG"), user profile, logout button |
+| `Footer`  | Copyright "2026 HDTG Inc." with Termos, Privacidade, Suporte links                                                                   |
+
+### UI (`src/components/ui/`)
+
+| Component       | Description                                                                                                                                                             |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Badge`         | Reusable status badge — 4 variants: `default` (blue), `success` (green), `danger` (red), `warning` (amber)                                                              |
+| `Modal`         | Generic modal via React Portal (`createPortal`). SSR-safe with `isMounted` guard. Props: `handleClose`, `overlayAnim`, `dialogAnim`, `title`, `description`, `canClose` |
+| `PasswordField` | Password input with show/hide toggle (Eye/EyeOff from lucide-react). Integrates with react-hook-form                                                                    |
+
+### Features — Users (`src/components/features/users/`)
+
+| Component            | Description                                                                                                        |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `UserRegisterModal`  | Registration form — name, email, password, confirm password. Zod `CreateUserSchema`. Redirects to login on success |
+| `UserLoginModal`     | Login form — email, password. Zod `LoginUserSchema`. Redirects to dashboard on success                             |
+| `UserFormModal`      | Create/Edit form — name, email. Zod `EditUserSchema`. Auto-detects edit mode via `userToEdit` prop                 |
+| `UserViewModal`      | Read-only detail view — displays name and email                                                                    |
+| `DeleteConfirmModal` | Confirmation dialog — shows user name, cancel/confirm buttons                                                      |
+
+---
+
+## Forms & Validation
+
+All forms use **react-hook-form** with **Zod** schemas via `@hookform/resolvers`.
+
+| Schema             | Fields                                       | Validation Rules                                                                               |
+| ------------------ | -------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `CreateUserSchema` | name, email, password, password_confirmation | name: min 3; password: min 8, uppercase, lowercase, number, special char; passwords must match |
+| `LoginUserSchema`  | email, password                              | email: valid format; password: required                                                        |
+| `EditUserSchema`   | name, email                                  | name: min 3; email: valid format                                                               |
+
+Validation errors are displayed inline with red border styling on invalid fields.
+
+---
+
+## Custom Hook: useModal
+
+`src/hooks/useModal.ts` — Manages modal lifecycle with animated transitions:
+
+- Uses `useCallback` for the close handler and `useRef` for debouncing (prevents double-close)
+- Supports `canClose` option (when `false`, close is a no-op — used for mandatory modals like login/register)
+- Handles **Escape key** via `useEffect` with cleanup
+- Returns: `{ isClosing, handleClose, overlayAnim, dialogAnim }`
+- After close animation (250ms timeout), calls `router.back()` to dismiss URL-based modal state
+
+---
+
+## Data Layer & Backend Integration
+
+`src/services/userService.ts` — Functions for all backend API calls:
+
+| Function        | Method | Endpoint         | Notes               |
+| --------------- | ------ | ---------------- | ------------------- |
+| `getUsers()`    | GET    | `/users`         | `cache: "no-store"` |
+| `getUserById()` | GET    | `/users/:id`     | —                   |
+| `createUser()`  | POST   | `/auth/register` | Creates account     |
+| `loginUser()`   | POST   | `/auth/login`    | Authenticates user  |
+| `updateUser()`  | PUT    | `/users/:id`     | Updates user        |
+| `deleteUser()`  | DELETE | `/users/:id`     | Deletes user        |
+
+**API Route** (`src/app/api/register/activate/route.ts`): Proxies email activation tokens to `POST ${BACKEND_API_URL}/auth/register-complete`, then redirects to `/auth/login?activated=true`.
+
+### Environment Variables
+
+```env
+# Server-side (Docker network)
+BACKEND_API_URL=http://node:3000
+
+# Client-side (browser)
+NEXT_PUBLIC_BACKEND_API_URL=http://localhost:3000
+```
+
+---
+
+## How to Run
+
+### Prerequisites
+
+- [Git](https://git-scm.com)
+- [Node.js](https://nodejs.org/) (v20.x or higher) & **npm**
+- [Docker](https://www.docker.com) and [Docker Compose](https://docs.docker.com/compose)
+- The [Backend API](https://github.com/rafaeldevgmail/Applied-Software-Engineering) running on port 3000
+
+### Step by Step
+
+```bash
+# 1. Clone the repository
+git clone <this-repo-url>
+cd <project-folder>
+
+# 2. Create the external Docker network (if not already created)
+docker network create app-network
+
+# 3. Configure the .env file at the project root
+# (see section below)
+
+# 4. Start the container
+docker-compose up -d --build
+```
+
+The frontend will be available at `http://localhost:3001`.
+
+### Running Locally (without Docker)
+
+```bash
+npm install
+npm run dev
+```
+
+---
+
+## Docker
+
+`dockerfile` — Multi-stage build with `node:20-alpine`:
+
+```dockerfile
+FROM node:20-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+EXPOSE 3000
+CMD ["npm", "run", "dev"]
+```
+
+`docker-compose.yml`:
+
+```yaml
+services:
+  app:
+    build: .
+    ports:
+      - "3001:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    external: true
+```
+
+---
+
+## Frontend Project Structure
+
+```
+📁 root/
+├── ⚙️ .env                          # Environment variables (backend URLs)
+├── 🔒 .gitignore                    # Git exclusion rules
+├── 🐳 .dockerignore                 # Docker build exclusions
+├── 🐳 docker-compose.yml            # App service + external network
+├── 🐳 dockerfile                    # Node 20 Alpine build
+├── 📦 package.json                  # Project manifest & scripts
+├── ⚙️ next.config.ts                # Next.js config (standalone output)
+├── ⚙️ tsconfig.json                 # TypeScript configuration (strict)
+├── ⚙️ postcss.config.mjs            # Tailwind CSS v4 PostCSS plugin
+├── ⚙️ eslint.config.mjs             # ESLint 9 config
+├── 📂 public/                       # Static assets (SVGs)
+└── 📂 src/
+    ├── 📂 app/
+    │   ├── ⚙️ globals.css            # Glassmorphism design system + Tailwind v4 theme
+    │   ├── 🏠 layout.tsx             # Root layout (Geist fonts, Toaster)
+    │   ├── 🏠 page.tsx               # Root page → redirects to dashboard
+    │   ├── 📂 api/
+    │   │   └── 📂 register/
+    │   │       └── 📂 activate/
+    │   │           └── 🚀 route.ts   # API route: email activation proxy
+    │   ├── 📂 auth/
+    │   │   ├── 🏠 layout.tsx         # Auth layout (no sidebar)
+    │   │   ├── 📂 login/
+    │   │   │   └── 🏠 page.tsx       # Login page with modal
+    │   │   └── 📂 register/
+    │   │       └── 🏠 page.tsx       # Registration page with modal
+    │   └── 📂 dashboard/
+    │       ├── 🏠 layout.tsx         # Dashboard layout (sidebar + header + footer)
+    │       ├── 🏠 page.tsx           # Dashboard home (user/client summary)
+    │       └── 📂 users/
+    │           ├── 🏠 page.tsx       # Users CRUD table
+    │           └── ⚠️ error.tsx      # Error boundary for users route
+    ├── 📂 components/
+    │   ├── 📂 features/
+    │   │   └── 📂 users/
+    │   │       ├── 🗑️ delete-confirm-modal.tsx
+    │   │       ├── ✏️ user-form-modal.tsx
+    │   │       ├── 🔑 user-login-modal.tsx
+    │   │       ├── 📝 user-register-modal.tsx
+    │   │       └── 👁️ user-view-modal.tsx
+    │   ├── 📂 layout/
+    │   │   ├── 📋 footer.tsx
+    │   │   ├── 📋 header.tsx
+    │   │   └── 📋 sidebar.tsx
+    │   └── 📂 ui/
+    │       ├── 🏷️ badge.tsx
+    │       ├── 🪟 modal.tsx
+    │       └── 🔒 password-field.tsx
+    ├── 📂 hooks/
+    │   └── 🪝 useModal.ts            # Modal lifecycle hook (animations, Escape key)
+    ├── 📂 schemas/
+    │   └── 💎 userSchema.ts          # Zod schemas (Create, Login, Edit)
+    ├── 📂 services/
+    │   └── 🔗 userService.ts         # Backend API functions (CRUD + Auth)
+    ├── 📂 types/
+    │   └── 📐 user.ts                # User TypeScript interface
+    └── 📂 utils/
+        └── 🛠️ utils.ts               # getInitials(), formatDate()
+```
+
+---
+
+## 2. Backend application: Node.js
+
+A REST API built with Node.js as a showcase project for **software engineering best practices**. The codebase follows a modular monolith architecture with a layered design (Routes → Controllers → Use Cases → Repository), employing established design patterns such as Dependency Injection and SOLID principles. Features include asynchronous queue processing with BullMQ and Redis, a relational database integrated via Prisma ORM, and a fully containerized environment using Docker Compose.
+
+---
+
+## Stack
+
+| Category           | Technologies                                                      |
+| ------------------ | ----------------------------------------------------------------- |
+| **Runtime & Web**  | Node.js 20 (Alpine), Express 5, TypeScript 6                      |
+| **Database & ORM** | PostgreSQL 15, Prisma 7 (adapter-pg, driver adapters, migrations) |
+| **Queue & Cache**  | Redis 7, BullMQ 5, ioredis, Bull Board (dashboard)                |
+| **DevOps**         | Docker, Docker Compose                                            |
+| **Testing**        | Vitest 4, @faker-js/faker                                         |
+| **Security**       | JWT (jsonwebtoken), bcrypt, CORS                                  |
+| **Email**          | Nodemailer (Ethereal SMTP)                                        |
+
+---
+
+## 🏗️ Architecture & Best Practices
+
+- **Modular Monolith**: Code organized by domain modules (`auth`, `users`, `reports`) inside `src/modules/`, with shared infrastructure in `src/shared/`.
+- **Repository Pattern + DI**: `UserController` and `AuthController` receive `IUserRepository` via constructor injection. By using factories (`src/factories/`) to wire the concrete Prisma implementation, the controllers remain fully decoupled from the database layer (Dependency Inversion). This architecture enables a seamless transition from PostgreSQL to any other database adapter simply by swapping the injected implementation.
+- **Use Case Layer**: Business logic encapsulated in dedicated Use Cases (`LoginUseCase`, `RegisterStartUseCase`, `RegisterCompleteUseCase`) following the Single Responsibility Principle.
 - **API / Worker Separation**: The report worker runs in an independent Node process (`npm run start:workers`), consuming jobs from the Redis queue while the API remains responsive.
-- **Prisma with adapter-pg**: Native PostgreSQL connection pool adapted to Prisma, ensuring performance and support for typed migrations.
+- **Bull Board Dashboard**: Real-time queue monitoring at `/admin/queues` via Bull Board with basic auth protection.
+- **Prisma with Driver Adapters**: Native PostgreSQL connection pool (`pg`) adapted to Prisma via `@prisma/adapter-pg`, ensuring performance and typed migrations.
 
 ---
 
 ## Data Model
 
-The current schema includes the following relational entities:
+The schema includes the following relational entities:
 
-| Entity                | Description                           | Relationships           |
-| --------------------- | ------------------------------------- | ----------------------- |
-| **User**              | System user (JWT authentication)      | → Client, Task, Session |
-| **Client**            | Client registered by the user         | → User, Task            |
-| **Task**              | Task associated with a client         | → User, Client          |
-| **Session**           | User session (infrastructure)         | → User                  |
-| **PersonalAccessToken**| Personal access tokens (API)         | —                       |
+| Entity      | Table      | Description                   | Key Fields                                                                                                                                 |
+| ----------- | ---------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| **User**    | `users`    | System user (JWT auth)        | `id`, `name`, `email` (unique), `password`, `emailVerifiedAt`                                                                              |
+| **Client**  | `clients`  | Client registered by user     | `id`, `userId`, `name`, `email` (unique), `phone`, `company`, `status` (active/inactive/prospect), soft delete                             |
+| **Task**    | `tasks`    | Task associated with a client | `id`, `userId`, `clientId?`, `title`, `status` (todo/in_progress/review/done), `priority` (low/medium/high/urgent), `dueDate`, soft delete |
+| **Session** | `sessions` | User session (infrastructure) | `id`, `userId?`, `ipAddress`, `userAgent`, `payload`, `lastActivity`                                                                       |
+
+**Relations:**
+
+- User 1→N Client (cascade delete)
+- User 1→N Task (cascade delete)
+- Client 1→N Task (set null on delete)
 
 ---
 
 ## Features
 
-- **Authentication**: Login and registration with JWT + bcrypt (password hashing with salt)
-- **User CRUD**: Create, Read (list, find by ID), Update, Delete via Repository Pattern
-- **Client and Task Modeling**: Full relational model (Prisma schema with migrations)
-- **Async Reports**: Background data generation — the API enqueues the job in BullMQ and the worker processes it independently
-- **Automated Seed**: Realistic mock data with @faker-js/faker for development
+- **Two-Step Registration**: Email verification flow — `POST /auth/register` sends a JWT confirmation link via email; `POST /auth/register-complete` activates the account.
+- **Login with Email Verification**: Only verified accounts (`emailVerifiedAt`) can log in. Password comparison via bcrypt.
+- **User CRUD**: List (paginated with `skip`/`take`), find by ID, update, delete — all via Repository Pattern with automatic password stripping.
+- **Client & Task Modeling**: Full relational model with soft delete support, status enums, and priority levels.
+- **Async Reports**: Background data generation — the API enqueues a job in BullMQ (202 Accepted), and the worker processes it independently (updates task status: `todo → in_progress → done`).
+- **Bull Board Dashboard**: Admin UI at `/admin/queues` for real-time monitoring of queued jobs.
+- **Automated Seed**: Realistic mock data with @faker-js/faker.
+- **Global Error Handling**: Centralized middleware handling Prisma errors, `AppError` instances, and unexpected errors with proper HTTP status codes.
+
+---
+
+## API Routes
+
+| Method   | Path                      | Description                                               | Auth       |
+| -------- | ------------------------- | --------------------------------------------------------- | ---------- |
+| `GET`    | `/`                       | Health check                                              | No         |
+| `POST`   | `/auth/register`          | Start registration (sends verification email)             | No         |
+| `POST`   | `/auth/register-complete` | Complete registration with token                          | No         |
+| `POST`   | `/auth/login`             | Login (requires verified email)                           | No         |
+| `GET`    | `/users/`                 | List users (supports `skip`, `take`, `role` query params) | No         |
+| `GET`    | `/users/:id`              | Get user by ID                                            | No         |
+| `PUT`    | `/users/:id`              | Update user                                               | No         |
+| `DELETE` | `/users/:id`              | Delete user                                               | No         |
+| `POST`   | `/api/relatorio`          | Trigger async report generation                           | No         |
+| `GET`    | `/admin/queues/*`         | Bull Board dashboard (Basic Auth)                         | Basic Auth |
 
 ---
 
 ## Design Patterns & Principles
 
-| Pattern                   | Where                                                                                  | Benefit                                                                                |
-| ------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| **Repository**            | `IUserRepository` (interface) → `PrismaUserRepository` (concrete)                      | Isolates data access logic; swap ORM/database without impacting controllers             |
-| **Dependency Injection**  | `new UserController(userRepository)` in routes                                         | Facilitates testing with in-memory mocks; adheres to SOLID DIP                         |
-| **Single Responsibility** | Controller handles HTTP; Repository handles data; Service handles business rules       | Cohesive and independently testable code                                               |
-| **Background Worker**     | ReportService → BullMQ Queue → ReportWorker                                            | Heavy processing doesn't block the API response                                        |
-| **Error Objects**         | `AppError` and `EmailInUseError` (custom classes)                                      | Semantic and centralized error handling                                                |
+| Pattern                   | Where                                                                        | Benefit                                                                     |
+| ------------------------- | ---------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| **Repository**            | `IUserRepository` (interface) → `PrismaUserRepository` (concrete)            | Isolates data access logic; swap ORM/database without impacting controllers |
+| **Dependency Injection**  | `user-factory.ts` wires `PrismaUserRepository` into controllers              | Facilitates testing with in-memory mocks; adheres to SOLID DIP              |
+| **Use Case**              | `LoginUseCase`, `RegisterStartUseCase`, `RegisterCompleteUseCase`            | Encapsulates business logic; each class handles one operation               |
+| **Single Responsibility** | Controllers handle HTTP, Use Cases handle business, Repositories handle data | Cohesive and independently testable code                                    |
+| **Modular Organization**  | `src/modules/{auth,users,reports}/`                                          | Domain-driven structure; each module owns its routes, controllers, services |
+| **Background Worker**     | ReportService → BullMQ Queue → ReportWorker                                  | Heavy processing doesn't block the API response                             |
+| **Error Objects**         | `AppError` (custom class) + `PrismaErrorHandler` (static formatter)          | Semantic and centralized error handling with proper HTTP status mapping     |
 
 ---
 
@@ -71,12 +403,12 @@ The current schema includes the following relational entities:
 
 ```
 POST /api/relatorio
-  → ReportController (src/controllers/reportController.ts)
-    → ReportService.triggerReportGeneration (src/services/reportService.ts)
-      1. Creates PostgreSQL record (status: "todo")
+  → ReportController (src/modules/reports/report.controller.ts)
+    → ReportService.triggerReportGeneration (src/modules/reports/report.service.ts)
+      1. Creates PostgreSQL Task record (status: "todo")
       2. Adds job to queue: reportQueue.add("gerar-pdf-clientes", { taskId, userId })
 
-[Redis] ──► reportWorker (src/workers/reportWorker.ts)
+[Redis] ──► reportWorker (src/modules/reports/report.worker.ts)
               → ReportService.processGeneratedData(taskId, userId, jobId)
                 1. Updates task to "in_progress"
                 2. Fetches clients from database
@@ -86,13 +418,15 @@ POST /api/relatorio
 
 ### Components
 
-1. **Queue** (`src/queues/reportQueue.ts`): Defines the `"relatorios-queue"` connected to Redis. Exports a singleton instance.
+1. **Queue** (`src/modules/reports/report.queue.ts`): Defines the `"relatorios-queue"` connected to Redis via `redisConfig`. Exports a singleton BullMQ `Queue` instance.
 
-2. **Worker** (`src/workers/reportWorker.ts`): Listens to the same queue. Extracts `taskId` and `userId` from `job.data` and calls `reportService.processGeneratedData()`. Has listeners for `completed` and `failed`.
+2. **Worker** (`src/modules/reports/report.worker.ts`): Listens to the same queue. Extracts `taskId` and `userId` from `job.data` and calls `reportService.processGeneratedData()`. Has listeners for `completed` and `failed` events.
 
-3. **Worker bootstrap** (`src/workers/index.ts`): Starts the worker. Run via `npm run start:workers` (command: `tsx src/workers/index.ts`).
+3. **Worker bootstrap** (`src/shared/infra/workers/index.ts`): Entry point that starts the worker. Run via `npm run start:workers`.
 
-4. **Producer** (`src/services/reportService.ts`): `triggerReportGeneration` persists the task in Postgres and enqueues the job in Redis with `reportQueue.add("gerar-pdf-clientes", data)`.
+4. **Producer** (`src/modules/reports/report.service.ts`): `triggerReportGeneration` persists the task in Postgres and enqueues the job with `reportQueue.add("gerar-pdf-clientes", { taskId, userId })`.
+
+5. **Dashboard**: Bull Board at `/admin/queues` provides real-time monitoring of the `relatorios-queue`.
 
 ### Complete Flow
 
@@ -102,15 +436,15 @@ POST /api/relatorio
 
 ### Characteristics
 
-- **No scheduling (cron)**: Jobs are created on demand, only via HTTP request
-- **Single active queue**: `relatorios-queue` with one job: `gerar-pdf-clientes`
-- **Concurrency**: By default, BullMQ processes **5 simultaneous jobs** per worker (configurable via `concurrency: N` in the constructor)
-- **Retry**: No explicit configuration — uses BullMQ defaults (automatic attempts with backoff)
-- **Redis as backbone**: Both the queue and messages go through Redis (`redis:7-alpine` service in docker-compose)
+- **On-demand execution**: Jobs are created only via HTTP request (no cron scheduling)
+- **Single queue**: `relatorios-queue` with one job type: `gerar-pdf-clientes`
+- **Concurrency**: Default BullMQ concurrency (configurable via `concurrency` in worker constructor)
+- **Retry**: Uses BullMQ defaults (automatic attempts with backoff)
+- **Redis as backbone**: Queue and messages routed through Redis (`redis:7-alpine` in docker-compose)
 
 ### Running Locally
 
-Two separate processes:
+Two separate processes are required:
 
 - **API**: `npm start` (or `npm run dev`)
 - **Worker**: `npm run start:workers`
@@ -120,8 +454,9 @@ Two separate processes:
 ## How to Run
 
 ### Prerequisites
+
 - [Git](https://git-scm.com)
-- [Node.js](https://nodejs.org/) (v20.x or higher) & **npm**
+- [Node.js](https://nodejs.org/) (v20.x or higher) & npm
 - [Docker](https://www.docker.com) and [Docker Compose](https://docs.docker.com/compose)
 
 ### Step by Step
@@ -140,9 +475,11 @@ docker network create app-network
 # 4. Start the containers
 docker-compose up -d --build
 
-# 5. Run migrations and seed
+# 5. Run migrations
 docker exec -it node npx prisma migrate dev
-docker exec -it node npx prisma db seed
+
+# 6. Seed the database
+docker exec -it node npm run db:seed
 ```
 
 The API will be available at `http://localhost:3000`.
@@ -165,8 +502,36 @@ REDIS_HOST=redis
 REDIS_PORT=6379
 
 # JWT
-JWT_SECRET=YOURSECRETKEY
+JWT_SECRET=YOURJWTSECRET
+
+# Frontend URL (used in email verification links)
+FRONTEND_URL="http://localhost:4000"
+
+# Bull Board Dashboard
+BULL_BOARD_USER=USER
+BULL_BOARD_PASSWORD=PASS
+
+# SMTP (Nodemailer - Ethereal for development)
+SMTP_HOST="SMTP.HOST.EMAIL"
+SMTP_PORT=587
+SMTP_USER=USER
+SMTP_PASS=PASS
 ```
+
+---
+
+## Scripts
+
+| Command                 | Description                                |
+| ----------------------- | ------------------------------------------ |
+| `npm run dev`           | Start API in development mode (tsx)        |
+| `npm run debug`         | Start API with remote debugger (port 9229) |
+| `npm run dev:watch`     | Start API with file watching               |
+| `npm start`             | Start API in production-like mode          |
+| `npm run start:workers` | Start the background report worker         |
+| `npm test`              | Generate Prisma client and run Vitest      |
+| `npm run test:watch`    | Run standalone queue test script           |
+| `npm run db:seed`       | Generate Prisma client and seed database   |
 
 ---
 
@@ -185,7 +550,7 @@ npm test
 
 ---
 
-## Node.js Project Structure
+## Backend Project Structure
 
 ```
 📁 root/
@@ -196,57 +561,65 @@ npm test
 ├── 🐳 dockerfile                    # Node 20 Alpine build
 ├── 📦 package.json                  # Project manifest & scripts
 ├── 💎 prisma.config.ts              # Prisma ORM configuration
-├── ⚙️ tsconfig.json                 # TypeScript configuration
+├── ⚙️ tsconfig.json                 # TypeScript configuration (path alias: @/*)
 ├── 📂 .vscode/
 │   ├── 🔧 launch.json               # Docker debug attach config
 │   └── ⚙️ settings.json             # Workspace settings
 └── 📂 src/
-    ├── ⚙️ app.ts                    # Express configuration (middlewares, routes)
-    ├── 🚀 server.ts                 # Entry point (server initialization)
     ├── 📂 config/
-    │   ├── ⚙️ env.ts                # Env var validation & export
-    │   ├── 🔗 redisConfig.ts        # Redis connection config
-    │   └── 📊 bullBoard.ts          # Bull Board UI setup
-    ├── 📂 controllers/
-    │   ├── 🔑 authController.ts     # Login and registration (JWT + bcrypt)
-    │   ├── 📋 reportController.ts   # Endpoint to trigger async report
-    │   └── 👤 userController.ts     # User CRUD (with injected repository)
-    ├── 📂 errors/
-    │   ├── ⚠️ AppError.ts           # Base error class
-    │   ├── 📧 EmailInUseError.ts    # Semantic duplicate email error
-    │   └── 🗃️ prismaErrorHandler.ts # Prisma error formatter
+    │   ├── 📊 bullBoard.ts              # Bull Board UI setup (/admin/queues)
+    │   ├── ⚙️ env.ts                    # Env var validation & export
+    │   └── 🔗 redisConfig.ts            # Redis connection config
+    ├── 📂 factories/
+    │   └── 🔧 user-factory.ts           # DI factory: wires PrismaUserRepository into controllers
     ├── 📂 lib/
-    │   └── 🗄️ prisma.ts             # PrismaClient singleton with adapter-pg
-    ├── 📂 middlewares/
-    │   ├── 🪪 authMiddleware.ts     # JWT token verification middleware
-    │   └── 🚨 errorMiddleware.ts    # Global error handler
+    │   └── 🗄️ prisma.ts                 # PrismaClient singleton (driver adapter pattern)
+    ├── 📂 modules/
+    │   ├── 📂 auth/
+    │   │   ├── 🔑 auth.controller.ts    # Login & registration handlers
+    │   │   └── 🔑 auth.routes.ts        # POST /login, /register, /register-complete
+    │   ├── 📂 reports/
+    │   │   ├── 📋 report.controller.ts  # Triggers async report generation
+    │   │   ├── 📤 report.queue.ts       # BullMQ queue definition (relatorios-queue)
+    │   │   ├── 📋 report.routes.ts      # POST /api/relatorio
+    │   │   ├── ⚙️ report.service.ts     # Business logic: create task + enqueue job
+    │   │   └── ⚙️ report.worker.ts      # BullMQ worker: background report processing
+    │   └── 📂 users/
+    │       ├── 📂 repository/
+    │       │   ├── 💎 prisma/
+    │       │   │   └── 💾 user.prisma.repository.ts    # Concrete Prisma implementation
+    │       │   └── 📄 user.repository.interface.ts     # IUserRepository interface
+    │       ├── 📂 useCases/
+    │       │   ├── 🔑 LoginUseCase.ts              # Email verification + bcrypt comparison
+    │       │   ├── 🔑 RegisterCompleteUseCase.ts   # JWT token verification + account activation
+    │       │   └── 🔑 RegisterStartUseCase.ts      # Email validation, hashing, nodemailer
+    │       ├── 👤 user.controller.ts     # User CRUD (with injected repository)
+    │       └── 👤 user.routes.ts         # GET/PUT/DELETE /users, /users/:id
     ├── 💎 prisma/
-    │   ├── 📊 schema.prisma         # User/Client/Task/Session models
-    │   ├── 🌱 seed.ts               # Database seeder with faker
-    │   └── 🗄️ migrations/           # Versioned Prisma migrations
-    ├── 📂 queues/
-    │   └── 📤 reportQueue.ts        # BullMQ queue definition (reports-queue)
-    ├── 📂 repositories/
-    │   ├── 📄 user.repository.interface.ts   # IUserRepository interface (contract)
-    │   └── 💎 prisma/
-    │       └── 💾 user.prisma.repository.tsx # Concrete Prisma implementation
-    ├── 📂 routes/
-    │   ├── 🔑 authRoutes.ts         # POST /login, /register
-    │   ├── 📋 reportRoutes.ts       # POST /relatorio
-    │   └── 👤 userRoutes.ts         # CRUD /users
-    ├── 📂 services/
-    │   └── ⚙️ reportService.ts      # Business logic: create task + enqueue job
-    ├── 🧪 tests/integration/
-    │   ├── ✅ report.spec.ts        # Integration test (Vitest) for report queue
-    │   └── 🧪 queue.test.ts         # Sandbox script for manual queue testing
-    ├── 📂 use-cases/                # Empty - future Use Cases
-    ├── 📂 factories/                # Empty - future Factories for object creation
-    └── 🏃 workers/
-        ├── 🚀 index.ts              # Worker orchestration entry point
-        └── ⚙️ reportWorker.ts       # BullMQ worker: background processes report generation 
+    │   ├── 📊 schema.prisma              # User/Client/Task/Session
+    │   ├── 🌱 seed.ts                    # Database seeder with faker
+    │   └── 🗄️ migrations/                # Versioned Prisma migrations
+    ├── 📂 shared/
+    │   ├── 📂 errors/
+    │   │   ├── ⚠️ AppError.ts            # Base error class (message + statusCode)
+    │   │   └── 🗃️ prismaErrorHandler.ts  # Prisma error formatter (P2002, P2025, etc.)
+    │   ├── 📂 infra/
+    │   │   ├── 📂 http/
+    │   │   │   ├── ⚙️ app.ts             # Express config (CORS, routes, error handler)
+    │   │   │   └── 🚀 server.ts          # Entry point (server initialization)
+    │   │   └── 🏃 workers/
+    │   │       └── 🚀 index.ts                       # Worker entry point (imports report.worker.ts)
+    │   └── 📂 middlewares/
+    │       ├── 🪪 authMiddleware.ts       # JWT token verification middleware
+    │       └── 🚨 errorMiddleware.ts      # Global Express error handler
+    └── 🧪 tests/
+        └── 🧪 integration/
+            ├── ✅ report.spec.ts         # Vitest integration test for report queue
+            └── 🧪 queue.test.ts          # Standalone script for manual queue testing
 ```
 
 ---
+
 ## License
 
 Distributed under the ISC license. See `package.json` for more information.
