@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { UseFormRegisterReturn, FieldError } from "react-hook-form";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Lock } from "lucide-react";
+import { Input } from "@/components/ui/input"; // Ajuste o caminho do seu Input
 
 interface PasswordFieldProps {
   label: string;
-  placeholder: string;
-  error?: string;
+  placeholder?: string;
+  error?: FieldError;
   register: UseFormRegisterReturn;
 }
 
@@ -20,36 +21,27 @@ export function PasswordField({
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="w-full">
-      <label className="block text-sm font-medium mb-1">{label}</label>
-
-      <div className="flex items-center relative">
-        <input
-          type={showPassword ? "text" : "password"}
-          {...register}
-          placeholder={placeholder}
-          className={`w-full p-2 pr-10 border bg-transparent rounded-lg text-black dark:text-white focus:outline-none focus:border-purple-500 transition-colors ${
-            error ? "border-red-500" : "border-black-300"
-          }`}
-        />
-
+    <Input
+      {...register}
+      type={showPassword ? "text" : "password"}
+      label={label}
+      placeholder={placeholder}
+      error={error?.message}
+      leftIcon={<Lock className="w-4 h-4" />}
+      rightIcon={
         <button
           type="button"
           onClick={() => setShowPassword((prev) => !prev)}
-          className="absolute right-2 p-2 focus:outline-none cursor-pointer"
+          className="p-1 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors cursor-pointer"
           aria-label={showPassword ? "Esconder senha" : "Mostrar senha"}
         >
           {showPassword ? (
-            <Eye className="w-5 h-5 text-current" />
+            <EyeOff className="w-4 h-4" />
           ) : (
-            <EyeOff className="w-5 h-5 text-current" />
+            <Eye className="w-4 h-4" />
           )}
         </button>
-      </div>
-
-      {error?.message && (
-        <p className="text-red-500 text-sm mt-1">{error.message}</p>
-      )}
-    </div>
+      }
+    />
   );
 }

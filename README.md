@@ -160,16 +160,6 @@ Validation errors are displayed inline with red border styling on invalid fields
 
 **API Route** (`src/app/api/register/activate/route.ts`): Proxies email activation tokens to `POST ${BACKEND_API_URL}/auth/register-complete`, then redirects to `/auth/login?activated=true`.
 
-### Environment Variables
-
-```env
-# Server-side (Docker network)
-BACKEND_API_URL=http://node:3000
-
-# Client-side (browser)
-NEXT_PUBLIC_BACKEND_API_URL=http://localhost:3000
-```
-
 ---
 
 ## How to Run
@@ -198,52 +188,24 @@ docker network create app-network
 docker-compose up -d --build
 ```
 
-The frontend will be available at `http://localhost:3001`.
+The frontend will be available at `http://localhost:4000`.
 
-### Running Locally (without Docker)
+### Environment Variables (.env)
+
+```env
+# Usada pelo Next.js quando faz requisições pelo servidor (Server-side)
+BACKEND_API_URL=http://node:3000
+
+# Usada pelo navegador/modais (Client-side)
+NEXT_PUBLIC_BACKEND_API_URL=http://localhost:3000
+```
+
+### Running Locally
 
 ```bash
 npm install
 npm run dev
 ```
-
----
-
-## Docker
-
-`dockerfile` — Multi-stage build with `node:20-alpine`:
-
-```dockerfile
-FROM node:20-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-EXPOSE 3000
-CMD ["npm", "run", "dev"]
-```
-
-`docker-compose.yml`:
-
-```yaml
-services:
-  app:
-    build: .
-    ports:
-      - "3001:3000"
-    volumes:
-      - .:/app
-      - /app/node_modules
-      - /app/.next
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    external: true
-```
-
----
 
 ## Frontend Project Structure
 

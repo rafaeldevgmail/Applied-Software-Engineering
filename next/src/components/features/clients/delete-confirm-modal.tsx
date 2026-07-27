@@ -4,31 +4,31 @@ import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useModal } from "@/hooks/useModal";
 import { Modal } from "@/components/ui/modal";
-import { deleteUser } from "@/services/userService";
+import { deleteClient } from "@/services/clientService";
 import { toast } from "react-hot-toast";
 
 interface DeleteConfirmModalProps {
-  userId: number;
-  userName: string;
+  clientId: number;
+  clientName: string;
 }
 
 export function DeleteConfirmModal({
-  userId,
-  userName,
+  clientId,
+  clientName,
 }: DeleteConfirmModalProps) {
   const router = useRouter();
   const { handleClose, overlayAnim, dialogAnim } = useModal();
 
   const handleDelete = async () => {
     try {
-      await deleteUser(userId);
-      toast.success("Usuário excluido com sucesso!");
-      // Fecha o modal e atualiza a listagem de usuários na tela
+      await deleteClient(clientId);
+      toast.success("Cliente excluido com sucesso!");
+      // Fecha o modal e atualiza a listagem de clientes na tela
       handleClose();
       router.refresh();
     } catch (error: any) {
-      console.error("Erro ao excluir usuário:", error);
-      toast.error("Erro ao excluir usuário. Por favor, tente novamente.");
+      console.error("Erro ao excluir cliente:", error);
+      toast.error("Erro ao excluir cliente. Por favor, tente novamente.");
     }
   };
 
@@ -37,10 +37,10 @@ export function DeleteConfirmModal({
       handleClose={handleClose}
       overlayAnim={overlayAnim}
       dialogAnim={dialogAnim}
-      title="Excluir Usuário?"
+      title="Excluir Cliente?"
     >
       <p className="text-sm text-zinc-600 dark:text-zinc-200 mb-6">
-        Tem certeza que deseja excluir <strong>{userName}</strong>? Esta ação
+        Tem certeza que deseja excluir <strong>{clientName}</strong>? Esta ação
         não poderá ser desfeita.
       </p>
       <div className="flex justify-end gap-3">
