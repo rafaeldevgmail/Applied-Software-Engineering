@@ -1,4 +1,4 @@
-import { getUsers } from "@/services/userService";
+import { getClients } from "@/services/clientService";
 import Link from "next/link";
 import { formatDate, getInitials } from "@/utils/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -8,9 +8,9 @@ import {
   faTrash,
   faEye,
 } from "@fortawesome/free-solid-svg-icons";
-import { UserFormModal } from "@/components/features/users/user-form-modal";
-import { UserViewModal } from "@/components/features/users/user-view-modal";
-import { DeleteConfirmModal } from "@/components/features/users/delete-confirm-modal";
+import { ClientFormModal } from "@/components/features/clients/client-form-modal";
+import { ClientViewModal } from "@/components/features/clients/client-view-modal";
+import { DeleteConfirmModal } from "@/components/features/clients/delete-confirm-modal";
 interface PageProps {
   searchParams: Promise<{
     modal?: string;
@@ -19,17 +19,16 @@ interface PageProps {
     viewId?: string;
   }>;
 }
-export default async function UsersListPage({ searchParams }: PageProps) {
+export default async function ClientsListPage({ searchParams }: PageProps) {
   const { modal, editId, deleteId, viewId } = await searchParams;
-  // const users = await getUsers();
-  const { data: users, total: totalUsuarios } = await getUsers();
+  const { data: clients, total: totalClientes } = await getClients();
 
-  const findUser = (id) =>
-    id && users ? users.find((user) => user.id === Number(id)) : null;
+  const findClient = (id) =>
+    id && clients ? clients.find((client) => client.id === Number(id)) : null;
 
-  const userToView = findUser(viewId);
-  const userToEdit = findUser(editId);
-  const userToDelete = findUser(deleteId);
+  const clientToView = findClient(viewId);
+  const clientToEdit = findClient(editId);
+  const clientToDelete = findClient(deleteId);
 
   const isModalOpen = modal === "true" || !!editId;
 
@@ -38,24 +37,23 @@ export default async function UsersListPage({ searchParams }: PageProps) {
       {/* Cabeçalho do CRUD */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold tracking-wide">Usuários</h1>
-          <p className="text-sm ">Gerencie os usuários</p>
+          <h1 className="text-2xl font-bold tracking-wide">Clientes</h1>
+          <p className="text-sm ">Gerencie os clientes</p>
         </div>
 
-        {/* Botão Novo Usuário */}
-        {/* <Link href="/dashboard/users?modal=true"> */}
-        <Link href="/auth/register">
+        {/* Botão Novo Cliente */}
+        <Link href="/dashboard/clients?modal=true">
           <button className="cursor-pointer flex items-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-medium px-4 py-2.5 rounded-xl shadow-lg shadow-indigo-500/20 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 text-sm">
             <FontAwesomeIcon icon={faPlus} />
-            Novo Usuário
+            Novo Cliente
           </button>
         </Link>
-        {isModalOpen && <UserFormModal userToEdit={userToEdit} />}
-        {!!userToView && <UserViewModal userToView={userToView} />}
-        {!!userToDelete && (
+        {isModalOpen && <ClientFormModal clientToEdit={clientToEdit} />}
+        {!!clientToView && <ClientViewModal clientToView={clientToView} />}
+        {!!clientToDelete && (
           <DeleteConfirmModal
-            userId={userToDelete.id}
-            userName={userToDelete.name}
+            clientId={clientToDelete.id}
+            clientName={clientToDelete.name}
           />
         )}
       </div>
@@ -84,19 +82,19 @@ export default async function UsersListPage({ searchParams }: PageProps) {
 
             {/* Corpo da Tabela */}
             <tbody className="divide-y divide-white/5">
-              {users?.map((user) => (
+              {clients?.map((client) => (
                 <tr
-                  key={user.id}
+                  key={client.id}
                   className="hover:bg-white/[0.2] transition-colors duration-150 group"
                 >
                   {/* Nome (com avatar) */}
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-violet-500 to-fuchsia-500 flex items-center justify-center text-white font-semibold text-xs shadow-inner">
-                        {getInitials(user.name)}
+                        {getInitials(client.name)}
                       </div>
                       <div>
-                        <div className="font-medium">{user.name}</div>
+                        <div className="font-medium">{client.name}</div>
                       </div>
                     </div>
                   </td>
@@ -104,13 +102,13 @@ export default async function UsersListPage({ searchParams }: PageProps) {
                   {/* E-mail */}
                   <td className="px-6 py-4 whitespace-nowrap ">
                     <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-violet-500/10 text-violet-800 dark:bg-violet-500/50 dark:text-violet-200 border border-violet-500/20">
-                      {user.email}
+                      {client.email}
                     </span>
                   </td>
 
                   {/* Criado em */}
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {formatDate(user.createdAt)}
+                    {formatDate(client.createdAt)}
                   </td>
 
                   {/* Ações */}
@@ -118,7 +116,7 @@ export default async function UsersListPage({ searchParams }: PageProps) {
                     <div className="flex items-center justify-center gap-2">
                       {/* Botão Editar */}
                       <Link
-                        href={`/dashboard/users?editId=${user.id}`}
+                        href={`/dashboard/clients?editId=${client.id}`}
                         className="cursor-pointer bg-green-600 p-1.5 rounded-lg text-white hover:bg-green-700 transition-all"
                       >
                         <FontAwesomeIcon icon={faPen} />
@@ -126,13 +124,13 @@ export default async function UsersListPage({ searchParams }: PageProps) {
 
                       {/* Botão Excluir */}
                       <Link
-                        href={`/dashboard/users?deleteId=${user.id}`}
+                        href={`/dashboard/clients?deleteId=${client.id}`}
                         className="cursor-pointer bg-rose-600 p-1.5 rounded-lg text-white hover:bg-rose-700 transition-all"
                       >
                         <FontAwesomeIcon icon={faTrash} />
                       </Link>
                       <Link
-                        href={`/dashboard/users?viewId=${user.id}`}
+                        href={`/dashboard/clients?viewId=${client.id}`}
                         className="cursor-pointer bg-blue-600 p-1.5 rounded-lg text-white hover:bg-blue-700 transition-all"
                       >
                         <FontAwesomeIcon icon={faEye} />
@@ -148,7 +146,7 @@ export default async function UsersListPage({ searchParams }: PageProps) {
         {/* Paginação / Rodapé */}
         <div className="px-6 py-4 bg-white/[0.01] border-t border-white/5 flex items-center justify-between flex-wrap gap-4 text-xs text-slate-400">
           <span>
-            Exibindo <b>{totalUsuarios}</b> de <b>{totalUsuarios}</b> usuários
+            Exibindo <b>{totalClientes}</b> de <b>{totalClientes}</b> cliente(s)
           </span>
           <div className="flex items-center gap-2">
             <button

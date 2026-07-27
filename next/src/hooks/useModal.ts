@@ -35,7 +35,7 @@ export function useModal({ canClose = true } = { canClose: true }) {
     timeoutRef.current = setTimeout(() => {
       //Após o tempo acabar, volta para a rota anterior (fecha a interceptação)
       router.back();
-    }, 250);
+    }, 500);
     //Fecha o bloco do `useCallback` e passa o `router` como dependência.
   }, [router]);
 

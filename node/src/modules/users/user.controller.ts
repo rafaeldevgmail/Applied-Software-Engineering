@@ -1,21 +1,11 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { IUserRepository } from "@/modules/users/repository/user.repository.interface.ts";
 import { AppError } from "@/shared/errors/AppError.ts";
 
 export class UserController {
   constructor(private userRepository: IUserRepository) {}
-  //Create - Criar usuário
-  /*create = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const user = await this.userRepository.create(req.body);
-      return res.status(201).json(user);
-    } catch (error) {
-      // O Express joga o erro direto para o Middleware Global!
-      next(error);
-    }
-  };*/
 
-  //Read - Listar todos os usuários
+  //Index - Listar todos os usuários
   index = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { skip, take, role } = req.query;
@@ -57,7 +47,7 @@ export class UserController {
     }
   };
 
-  //Read - Buscar usuário por ID
+  //Show - Buscar usuário por ID
   show = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;

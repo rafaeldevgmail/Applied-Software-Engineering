@@ -3,6 +3,7 @@ import cors from "cors";
 import reportRoutes from "@/modules/reports/report.routes.ts";
 import authRouter from "@/modules/auth/auth.routes.ts";
 import usersRouter from "@/modules/users/user.routes.ts";
+import clientsRouter from "@/modules/clients/client.routes.ts";
 //BullMQ Board
 import { serverAdapter } from "@/config/bullBoard.ts";
 import { errorMiddleware } from "@/shared/middlewares/errorMiddleware.ts";
@@ -42,6 +43,7 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/admin/queues", serverAdapter.getRouter());
 app.use("/auth", authRouter);
 app.use("/users", usersRouter);
+app.use("/clients", clientsRouter);
 app.use("/api", reportRoutes);
 
 //Middleware de erro do express

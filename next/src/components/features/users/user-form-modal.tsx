@@ -10,6 +10,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { EditUserSchema, EditUserFormData } from "@/schemas/userSchema"; // Importe o schema de validação
 import { createUser, updateUser } from "@/services/userService";
 import { toast } from "react-hot-toast";
+import { Input } from "@/components/ui/input";
+
+//Importar icones de lucide-react
+import { User as UserIcon, Mail } from "lucide-react";
 
 interface UserFormModalProps {
   userToEdit?: User | null;
@@ -68,32 +72,25 @@ export function UserFormModal({ userToEdit }: UserFormModalProps) {
       description="Preencha os dados do usuário."
     >
       <form onSubmit={formHandleSubmit(onSubmit)} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium mb-1">Nome</label>
-          {/* mudar a borda do input para vermelho se tiver erro */}
-          <input
-            type="text"
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Nome */}
+          <Input
+            label="Nome"
             {...register("name")}
-            className={`w-full p-2 border focus:outline-none focus:border-purple-500 rounded-lg bg-transparent ${errors.name ? "border-red-500" : "border-black-300"}`}
-            placeholder="John Doe"
+            error={errors.name?.message}
+            placeholder="Nome Completo"
+            leftIcon={<UserIcon />}
           />
-          {errors.name && (
-            <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
-          )}
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">E-mail</label>
-          <input
-            type="email"
-            {...register("email")}
-            className={`w-full p-2 border focus:outline-none focus:border-purple-500 rounded-lg bg-transparent ${errors.email ? "border-red-500" : "border-black-300"}`}
-            placeholder="john@example.com"
-          />
-          {errors.email && (
-            <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
-          )}
-        </div>
 
+          {/* Email */}
+          <Input
+            label="E-mail"
+            {...register("email")}
+            error={errors.email?.message}
+            placeholder="nome@empresa.com"
+            leftIcon={<Mail />}
+          />
+        </div>
         <div className="flex justify-end gap-3 pt-4">
           <button
             type="button"

@@ -32,7 +32,7 @@ export const LoginUserSchema = z.object({
 });
 export const EditUserSchema = UserBaseSchema.extend({});
 
-export type CreateUserFormData = z.infer<typeof LoginUserSchema>; //z.infer<typeof CreateUserSchema>;
-export type EditUserFormData = z.infer<typeof LoginUserSchema>; //z.infer<typeof EditUserSchema>;
-export type LoginUserFormData = z.infer<typeof LoginUserSchema>; //z.infer<typeof LoginUserSchema>;
-export type UserBaseFormData = z.infer<typeof LoginUserSchema>; //z.infer<typeof UserBaseSchema>;
+export type CreateUserFormData = z.infer<typeof CreateUserSchema>;
+export type EditUserFormData = z.infer<typeof EditUserSchema>;
+export type LoginUserFormData = z.infer<typeof LoginUserSchema>;
+export type UserBaseFormData = z.infer<typeof UserBaseSchema>;

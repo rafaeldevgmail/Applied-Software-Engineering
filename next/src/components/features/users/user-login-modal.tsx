@@ -12,6 +12,10 @@ import { loginUser } from "@/services/userService";
 import { toast } from "react-hot-toast";
 import { Eye, EyeOff } from "lucide-react";
 import { PasswordField } from "@/components/ui/password-field";
+import { Input } from "@/components/ui/input";
+
+//Importar icones de lucide-react
+import { User as UserIcon, Mail } from "lucide-react";
 
 export function UserLoginModal() {
   const router = useRouter();
@@ -63,28 +67,24 @@ export function UserLoginModal() {
       canClose={false}
     >
       <form onSubmit={formHandleSubmit(onSubmit)} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium mb-1">E-mail</label>
-          <input
-            type="email"
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+          {/* Email */}
+          <Input
+            label="E-mail"
             {...register("email")}
-            className={`w-full p-2 border focus:outline-none focus:border-purple-500 rounded-lg bg-transparent ${errors.email ? "border-red-500" : "border-black-300"}`}
-            placeholder="john@example.com"
+            error={errors.email?.message}
+            placeholder="nome@empresa.com"
+            leftIcon={<Mail />}
           />
 
-          {errors.email && (
-            <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
-          )}
+          {/* Campo Senha */}
+          <PasswordField
+            label="Senha"
+            placeholder="Digite sua senha"
+            error={errors.password as any}
+            register={register("password")}
+          />
         </div>
-
-        {/* Campo Senha */}
-        <PasswordField
-          label="Senha"
-          placeholder="Digite sua senha"
-          error={errors.password as any}
-          register={register("password")}
-        />
-
         <div className="flex justify-end gap-3 pt-4">
           <button
             type="submit"
