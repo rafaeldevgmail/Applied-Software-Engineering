@@ -1,90 +1,113 @@
 import { IUserRepository } from "@/user.repository.interface.ts";
 import prisma from "@/lib/prisma.ts";
-import { User } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
+
+// 1. Definição centralizada dos campos públicos que o banco deve retornar
+export const userSelect = Prisma.validator<Prisma.UserSelect>()({
+  id: true,
+  name: true,
+  email: true,
+  createdAt: true,
+  updatedAt: true,
+  // A senha (password) é omitida por padrão aqui!
+});
+
+export type UserPublic = Prisma.UserGetPayload<{ select: typeof userSelect }>;
+
+export interface PaginationOptions {
+  page?: number;
+  limit?: number;
+  role?: string;
+}
+
+export interface PaginatedResult<T> {
+  data: T[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
 
 export class PrismaUserRepository implements IUserRepository {
-  /**
-   * Remove a senha e serializa datas para string.
-   * Isso evita erros no Next.js ao passar dados do Servidor para o Cliente.
-   */
-  private sanitizeUser(user: User | null): User | null {
-    if (!user) return null;
-
-    const { password, createdAt, updatedAt, ...userWithoutPassword } = user;
-
-    return {
-      ...userWithoutPassword,
-      createdAt: createdAt ? createdAt.toISOString() : undefined,
-      updatedAt: updatedAt ? updatedAt.toISOString() : undefined,
-    };
-  }
-
   // --- CREATE ---
-  async create(data: any): Promise<User | null> {
+  async create(data: any): Promise<UserPublic | null> {
     const { password_confirmation, ...prismaData } = data;
-    const user: User = await prisma.user.create({ data: prismaData });
-    return this.sanitizeUser(user);
+    return prisma.user.create({
+      data: prismaData,
+      select: userSelect,
+    });
   }
 
   // --- FIND BY ID ---
-  async findById(id: number): Promise<User | null> {
-    const user: User | null = await prisma.user.findUnique({ where: { id } });
-    return this.sanitizeUser(user);
+  async findById(id: number): Promise<UserPublic | null> {
+    return prisma.user.findUnique({ where: { id }, select: userSelect });
   }
 
   //--- FIND ONE ---
-  async findByEmail(email: string): Promise<User | null> {
-    const user: User | null = await prisma.user.findUnique({
+  async findByEmail(email: string): Promise<UserPublic | null> {
+    return prisma.user.findUnique({
       where: { email },
+      select: userSelect,
     });
-    return this.sanitizeUser(user);
   }
 
   // --- FIND MANY ---
-  async findAll(options?: {
-    skip?: number;
-    take?: number;
-    role?: string;
-  }): Promise<{ data: User[]; total: number }> {
-    const { skip, take, role } = options || {};
-    const users: User[] = await prisma.user.findMany({
-      skip,
-      take,
-      where: {
-        role,
-      },
-    });
-    const total: number = await prisma.user.count({
-      where: {
-        role,
-      },
-    });
+  async findAll(
+    options: PaginationOptions = {},
+  ): Promise<PaginatedResult<UserPublic>> {
+    const page = Math.max(1, options.page ?? 1);
+    const limit = Math.max(1, Math.min(options.limit ?? 10, 100)); // Limite máx. de 100 por segurança
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.UserWhereInput = {
+      ...(options.role && { role: options.role }),
+    };
+
+    const [data, total] = await prisma.$transaction([
+      prisma.user.findMany({
+        where,
+        select: userSelect,
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.user.count({ where }),
+    ]);
+
     return {
-      data: users.map((user) => this.sanitizeUser(user)),
-      total,
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
     };
   }
 
   // --- UPDATE ---
-  async update(id: number, data: any): Promise<User | null> {
-    const user: User | null = await prisma.user.update({
+  async update(id: number, data: any): Promise<UserPublic | null> {
+    return prisma.user.update({
       where: { id },
       data,
+      select: userSelect,
     });
-    return this.sanitizeUser(user);
   }
 
   // --- DELETE ---
-  async delete(id: number): Promise<User | null> {
-    const user: User | null = await prisma.user.delete({ where: { id } });
-    return this.sanitizeUser(user);
+  async delete(id: number): Promise<UserPublic | null> {
+    return prisma.user.delete({
+      where: { id },
+      select: userSelect,
+    });
   }
 
   //--- GET PASSWORD ---
   async getPassByEmail(email: string): Promise<User | null> {
-    const user: User | null = await prisma.user.findUnique({
+    return prisma.user.findUnique({
       where: { email },
     });
-    return user;
   }
 }

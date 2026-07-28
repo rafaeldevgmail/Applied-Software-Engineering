@@ -21,8 +21,7 @@ interface PageProps {
 }
 export default async function UsersListPage({ searchParams }: PageProps) {
   const { modal, editId, deleteId, viewId } = await searchParams;
-  // const users = await getUsers();
-  const { data: users, total: totalUsuarios } = await getUsers();
+  const { data: users, meta: meta } = await getUsers();
 
   const findUser = (id) =>
     id && users ? users.find((user) => user.id === Number(id)) : null;
@@ -148,7 +147,8 @@ export default async function UsersListPage({ searchParams }: PageProps) {
         {/* Paginação / Rodapé */}
         <div className="px-6 py-4 bg-white/[0.01] border-t border-white/5 flex items-center justify-between flex-wrap gap-4 text-xs text-slate-400">
           <span>
-            Exibindo <b>{totalUsuarios}</b> de <b>{totalUsuarios}</b> usuários
+            Página <b>{meta.page}</b> de <b>{meta.totalPages}</b> ( {meta.total}{" "}
+            usuários )
           </span>
           <div className="flex items-center gap-2">
             <button

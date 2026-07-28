@@ -1,3 +1,8 @@
+import {
+  PaginationOptions,
+  PaginatedResult,
+  ClientPublic,
+} from "@/modules/clients/repository/prisma/client.prisma.repository.ts";
 export class IClientRepository {
   create(data: any): Promise<any> {
     throw new Error("Method not implemented");
@@ -24,11 +29,7 @@ export class IClientRepository {
    * @returns {Promise<Array>} Lista de usuários encontrados
    */
   // Retorna os usuários e o total de registros encontrados
-  findAll(options?: {
-    skip?: number;
-    take?: number;
-    role?: string;
-  }): Promise<{ data: any[]; total: number }> {
+  findAll(options?: PaginationOptions): Promise<PaginatedResult<ClientPublic>> {
     throw new Error("Method not implemented");
   }
 }

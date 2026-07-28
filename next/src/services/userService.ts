@@ -1,5 +1,5 @@
 import { log } from "console";
-import { User } from "@/types/user";
+import { User, PaginationParams, PaginatedResponse } from "@/types/user";
 
 // Detecta se o código está rodando no navegador ou no servidor do Next.js
 const API_URL =
@@ -7,9 +7,29 @@ const API_URL =
     ? process.env.NEXT_PUBLIC_BACKEND_API_URL
     : process.env.BACKEND_API_URL;
 
-export async function getUsers() {
+export async function getUsers(
+  params: PaginationParams = {},
+): Promise<PaginatedResponse<User[]>> {
   try {
-    const response = await fetch(`${API_URL}/users`, {
+    const queryParams = new URLSearchParams();
+
+    if (params.page) {
+      queryParams.append("page", String(params.page));
+    }
+    if (params.limit) {
+      queryParams.set("limit", String(params.limit));
+    }
+    if (params.role) {
+      queryParams.set("role", params.role);
+    }
+    if (params.search) {
+      queryParams.set("search", params.search);
+    }
+
+    const queryString = queryParams.toString();
+    const url = `${API_URL}/users?${queryString}`;
+
+    const response = await fetch(url, {
       cache: "no-store", // Ou 'force-cache' dependendo da estratégia
     });
 
