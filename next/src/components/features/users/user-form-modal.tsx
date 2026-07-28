@@ -21,7 +21,7 @@ interface UserFormModalProps {
 
 export function UserFormModal({ userToEdit }: UserFormModalProps) {
   const router = useRouter();
-  const { handleClose, overlayAnim, dialogAnim } = useModal();
+  const { isOpen, handleClose, handleExitComplete } = useModal();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
@@ -65,9 +65,9 @@ export function UserFormModal({ userToEdit }: UserFormModalProps) {
 
   return (
     <Modal
+      isOpen={isOpen}
       handleClose={handleClose}
-      overlayAnim={overlayAnim}
-      dialogAnim={dialogAnim}
+      handleExitComplete={handleExitComplete}
       title={isEditMode ? "Editar Usuário" : "Cadastrar Novo Usuário"}
       description="Preencha os dados do usuário."
     >
@@ -95,7 +95,7 @@ export function UserFormModal({ userToEdit }: UserFormModalProps) {
           <button
             type="button"
             onClick={handleClose}
-            className="px-4 py-2 text-sm font-medium border rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 cursor-pointer"
+            className="px-4 py-2 text-sm font-medium border border-zinc-200 dark:border-zinc-600 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 cursor-pointer"
           >
             Cancelar
           </button>

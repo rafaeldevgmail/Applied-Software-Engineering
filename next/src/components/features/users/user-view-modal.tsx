@@ -17,15 +17,15 @@ interface UserViewModalProps {
 }
 
 export function UserViewModal({ userToView }: UserViewModalProps) {
-  const { handleClose, overlayAnim, dialogAnim } = useModal();
+  const { isOpen, handleClose, handleExitComplete } = useModal();
 
   if (!userToView) return null;
 
   return (
     <Modal
+      isOpen={isOpen}
       handleClose={handleClose}
-      overlayAnim={overlayAnim}
-      dialogAnim={dialogAnim}
+      handleExitComplete={handleExitComplete}
       title="Visualizar Usuário"
     >
       <div className="space-y-4">
@@ -46,7 +46,7 @@ export function UserViewModal({ userToView }: UserViewModalProps) {
             <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1.5">
               E-mail
             </label>
-            <div className="flex items-center gap-2.5 p-2.5 rounded-lg bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-700/60 text-zinc-900 dark:text-zinc-100 text-sm">
+            <div className="truncate flex items-center gap-2.5 p-2.5 rounded-lg bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-700/60 text-zinc-900 dark:text-zinc-100 text-sm">
               <Mail className="w-4 h-4 text-zinc-500 shrink-0" />
               <span>{userToView.email}</span>
             </div>
@@ -56,7 +56,7 @@ export function UserViewModal({ userToView }: UserViewModalProps) {
           <button
             type="button"
             onClick={handleClose}
-            className="px-4 py-2 text-sm font-medium border rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 cursor-pointer"
+            className="px-4 py-2 text-sm font-medium border border-zinc-200 dark:border-zinc-600 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 cursor-pointer"
           >
             Fechar
           </button>

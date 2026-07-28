@@ -18,7 +18,7 @@ import { User as UserIcon, Mail } from "lucide-react";
 
 export function UserRegisterModal() {
   const router = useRouter();
-  const { handleClose, overlayAnim, dialogAnim } = useModal({
+  const { isOpen, handleClose, handleExitComplete } = useModal({
     canClose: false,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -57,9 +57,9 @@ export function UserRegisterModal() {
 
   return (
     <Modal
+      isOpen={isOpen}
       handleClose={handleClose}
-      overlayAnim={overlayAnim}
-      dialogAnim={dialogAnim}
+      handleExitComplete={handleExitComplete}
       title={isEditMode ? "Editar Usuário" : "Cadastrar Novo Usuário"}
       description="Preencha os dados do usuário."
       canClose={false}

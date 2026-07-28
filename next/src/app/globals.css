@@ -309,51 +309,6 @@ h3,
   }
 }
 
-/* Animações de entrada/saída do Dialog 3D */
-@keyframes overlayIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes overlayOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
-
-@keyframes dialogContentIn {
-  from {
-    opacity: 0;
-    transform: perspective(500px) rotateX(-20deg) scale(0.8);
-    filter: blur(4px);
-  }
-  to {
-    opacity: 1;
-    transform: perspective(500px) rotateX(0deg) scale(1);
-    filter: blur(0px);
-  }
-}
-
-@keyframes dialogContentOut {
-  from {
-    opacity: 1;
-    transform: perspective(500px) rotateX(0deg) scale(1);
-    filter: blur(0px);
-  }
-  to {
-    opacity: 0;
-    transform: perspective(500px) rotateX(20deg) scale(0.8);
-    filter: blur(4px);
-  }
-}
-
 /* Custom Scrollbar para navegadores modernos */
 ::-webkit-scrollbar {
   width: 6px;
