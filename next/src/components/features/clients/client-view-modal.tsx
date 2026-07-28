@@ -1,25 +1,68 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useModal } from "@/hooks/useModal";
 import { Modal } from "@/components/ui/modal";
 import { Client } from "@/types/client";
 //Importar icones de lucide-react
-import { User, Mail, Building, Phone, NotebookPen, Info } from "lucide-react";
+import {
+  User as UserIcon,
+  Mail,
+  Building,
+  Phone,
+  NotebookPen,
+  Info,
+} from "lucide-react";
+import { getUserById } from "@/services/userService";
 
 interface ClientViewModalProps {
   clientToView?: Client | null;
 }
 
 export function ClientViewModal({ clientToView }: ClientViewModalProps) {
-  const { handleClose, overlayAnim, dialogAnim } = useModal();
+  const { isOpen, handleClose, handleExitComplete } = useModal();
+
+  // Estado para guardar o nome do usuário e o status de carregamento
+  const [userName, setUserName] = useState<string>("Carregando...");
+
+  //Buscar os dados do usuário via useEffect quando o clienteToView mudar
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadUserData() {
+      if (!clientToView?.userId) {
+        setUserName("Não vinculado");
+        return;
+      }
+
+      setUserName("Carregando...");
+
+      try {
+        const user = await getUserById(clientToView.userId);
+        if (isMounted) {
+          setUserName(user?.name || user?.email || "Usuário não encontrado");
+        }
+      } catch (error) {
+        console.error("Erro ao buscar dados do usuário:", error);
+        if (isMounted) {
+          setUserName("Erro ao carregar");
+        }
+      }
+    }
+    loadUserData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [clientToView?.userId]);
 
   if (!clientToView) return null;
 
   return (
     <Modal
+      isOpen={isOpen}
       handleClose={handleClose}
-      overlayAnim={overlayAnim}
-      dialogAnim={dialogAnim}
+      handleExitComplete={handleExitComplete}
       title="Visualizar Cliente"
     >
       <div className="space-y-4">
@@ -30,7 +73,7 @@ export function ClientViewModal({ clientToView }: ClientViewModalProps) {
               Nome
             </label>
             <div className="flex items-center gap-2.5 p-2.5 rounded-lg bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-700/60 text-zinc-900 dark:text-zinc-100 text-sm">
-              <User className="w-4 h-4 text-zinc-500 shrink-0" />
+              <UserIcon className="w-4 h-4 text-zinc-500 shrink-0" />
               <span className="font-medium">{clientToView.name}</span>
             </div>
           </div>
@@ -40,7 +83,7 @@ export function ClientViewModal({ clientToView }: ClientViewModalProps) {
             <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1.5">
               E-mail
             </label>
-            <div className="flex items-center gap-2.5 p-2.5 rounded-lg bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-700/60 text-zinc-900 dark:text-zinc-100 text-sm">
+            <div className="truncate flex items-center gap-2.5 p-2.5 rounded-lg bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-700/60 text-zinc-900 dark:text-zinc-100 text-sm">
               <Mail className="w-4 h-4 text-zinc-500 shrink-0" />
               <span>{clientToView.email}</span>
             </div>
@@ -75,7 +118,7 @@ export function ClientViewModal({ clientToView }: ClientViewModalProps) {
             </label>
             <div className="flex items-center gap-2.5 p-2.5 rounded-lg bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-700/60 text-zinc-900 dark:text-zinc-100 text-sm">
               <Info className="w-4 h-4 text-zinc-500 shrink-0" />
-              <span>{clientToView.userId}</span>
+              <span>{userName}</span>
             </div>
           </div>
 
@@ -109,7 +152,7 @@ export function ClientViewModal({ clientToView }: ClientViewModalProps) {
           <button
             type="button"
             onClick={handleClose}
-            className="px-4 py-2 text-sm font-medium border rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 cursor-pointer"
+            className="px-4 py-2 text-sm font-medium border border-zinc-200 dark:border-zinc-600 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 cursor-pointer"
           >
             Fechar
           </button>

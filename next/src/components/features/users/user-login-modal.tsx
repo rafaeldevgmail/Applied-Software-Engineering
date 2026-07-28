@@ -19,7 +19,7 @@ import { User as UserIcon, Mail } from "lucide-react";
 
 export function UserLoginModal() {
   const router = useRouter();
-  const { handleClose, overlayAnim, dialogAnim } = useModal({
+  const { isOpen, handleClose, handleExitComplete } = useModal({
     canClose: false,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -59,9 +59,9 @@ export function UserLoginModal() {
 
   return (
     <Modal
+      isOpen={isOpen}
       handleClose={handleClose}
-      overlayAnim={overlayAnim}
-      dialogAnim={dialogAnim}
+      handleExitComplete={handleExitComplete}
       title="Login"
       description="Preencha os dados do usuário."
       canClose={false}

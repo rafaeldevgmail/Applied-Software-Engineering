@@ -17,7 +17,7 @@ export function DeleteConfirmModal({
   clientName,
 }: DeleteConfirmModalProps) {
   const router = useRouter();
-  const { handleClose, overlayAnim, dialogAnim } = useModal();
+  const { isOpen, handleClose, handleExitComplete } = useModal();
 
   const handleDelete = async () => {
     try {
@@ -34,9 +34,9 @@ export function DeleteConfirmModal({
 
   return (
     <Modal
+      isOpen={isOpen}
       handleClose={handleClose}
-      overlayAnim={overlayAnim}
-      dialogAnim={dialogAnim}
+      handleExitComplete={handleExitComplete}
       title="Excluir Cliente?"
     >
       <p className="text-sm text-zinc-600 dark:text-zinc-200 mb-6">
@@ -46,7 +46,7 @@ export function DeleteConfirmModal({
       <div className="flex justify-end gap-3">
         <button
           onClick={handleClose}
-          className="px-4 py-2 text-sm font-medium border rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 cursor-pointer"
+          className="px-4 py-2 text-sm font-medium border border-zinc-200 dark:border-zinc-600 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 cursor-pointer"
         >
           Cancelar
         </button>

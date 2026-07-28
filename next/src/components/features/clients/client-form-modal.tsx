@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Modal } from "@/components/ui/modal";
 import { useModal } from "@/hooks/useModal";
-import { Client } from "@/types/client"; // Importe a tipagem do cliente
+import { Client } from "@/types/client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EditClientSchema, EditClientFormData } from "@/schemas/clientSchema"; // Importe o schema de validação
@@ -43,7 +43,7 @@ const statuses = [
 ];
 export function ClientFormModal({ clientToEdit }: ClientFormModalProps) {
   const router = useRouter();
-  const { handleClose, overlayAnim, dialogAnim } = useModal();
+  const { isOpen, handleClose, handleExitComplete } = useModal();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
@@ -94,9 +94,9 @@ export function ClientFormModal({ clientToEdit }: ClientFormModalProps) {
 
   return (
     <Modal
+      isOpen={isOpen}
       handleClose={handleClose}
-      overlayAnim={overlayAnim}
-      dialogAnim={dialogAnim}
+      handleExitComplete={handleExitComplete}
       title={isEditMode ? "Editar Cliente" : "Cadastrar Novo Cliente"}
       description="Preencha os dados do cliente."
     >
@@ -182,7 +182,7 @@ export function ClientFormModal({ clientToEdit }: ClientFormModalProps) {
           <button
             type="button"
             onClick={handleClose}
-            className="px-4 py-2 text-sm font-medium border rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 cursor-pointer"
+            className="px-4 py-2 text-sm font-medium border border-zinc-200 dark:border-zinc-600 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 cursor-pointer"
           >
             Cancelar
           </button>

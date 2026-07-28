@@ -33,7 +33,7 @@ https://github.com/user-attachments/assets/04b01f5c-d4b6-43e2-8fcf-0a4091f08180
 | **Styling**            | Tailwind CSS v4 (CSS-first), Custom Glassmorphism |
 | **Forms & Validation** | react-hook-form 7 + Zod 4 + @hookform/resolvers   |
 | **Icons**              | FontAwesome 7, Lucide React                       |
-| **Animations**         | Motion (Framer successor), CSS 3D Perspectives    |
+| **Animations**         | Motion 12 (Framer successor, `motion/react`), CSS 3D Perspectives, `AnimatePresence` |
 | **Notifications**      | react-hot-toast                                   |
 | **Fonts**              | Geist, Geist Mono (next/font)                     |
 | **Containers**         | Docker, Docker Compose                            |
@@ -45,6 +45,7 @@ https://github.com/user-attachments/assets/04b01f5c-d4b6-43e2-8fcf-0a4091f08180
 - **Server Components + Client Components**: Pages like `dashboard/page.tsx` are async Server Components that fetch data directly from the backend API. Interactive modals and forms are marked `"use client"` — clear separation of concerns.
 - **URL-Driven Modals**: Modal state is encoded in URL search params (`?modal=true`, `?editId=1`, `?deleteId=1`, `?viewId=1`). This enables deep-linking, browser history support, and consistent state across refreshes.
 - **Dual Environment URLs**: The service layer auto-detects whether code runs on the server (Docker network: `http://node:3000`) or in the browser (`http://localhost:3000`), ensuring seamless connectivity in both contexts.
+- **Animated Modals with `motion/react`**: All modals use `AnimatePresence` + `motion.div` with 3D `rotateX`/`scale`/`blur` variants for entry/exit transitions. The `useModal` hook orchestrates the lifecycle: close → exit animation → `router.back()`. Overlay fades independently over 0.25s while the dialog animates over 0.4s.
 - **Standalone Output**: `next.config.ts` sets `output: "standalone"` for optimized, self-contained Docker deployments.
 
 ---
@@ -58,6 +59,7 @@ https://github.com/user-attachments/assets/04b01f5c-d4b6-43e2-8fcf-0a4091f08180
 | `/auth/register`             | Registration modal with Zod validation, redirects to login    |
 | `/dashboard`                 | Home — summary cards (Users, Clients) with avatar initials    |
 | `/dashboard/users`           | Full CRUD table — list, create, edit, view, delete via modals |
+| `/dashboard/clients`         | Full CRUD table — list, create, edit, view, delete via modals |
 | `GET /api/register/activate` | API Route — proxies email activation token to the backend     |
 
 ---
@@ -104,8 +106,18 @@ The entire UI is built on a **custom glassmorphism/liquid glass design system** 
 | Component       | Description                                                                                                                                                             |
 | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `Badge`         | Reusable status badge — 4 variants: `default` (blue), `success` (green), `danger` (red), `warning` (amber)                                                              |
-| `Modal`         | Generic modal via React Portal (`createPortal`). SSR-safe with `isMounted` guard. Props: `handleClose`, `overlayAnim`, `dialogAnim`, `title`, `description`, `canClose` |
-| `PasswordField` | Password input with show/hide toggle (Eye/EyeOff from lucide-react). Integrates with react-hook-form                                                                    |
+| `Modal`         | Generic modal via React Portal (`createPortal`) with `AnimatePresence` from `motion/react`. SSR-safe with `isMounted` guard. 3D animation: `rotateX`, `scale`, `blur`, `opacity` via `dialogVariants`. Props: `isOpen`, `handleClose`, `handleExitComplete`, `title`, `description`, `canClose` |
+| `Input`         | Reusable input with `forwardRef` — `label`, `error`, `helperText`, `leftIcon`, `rightIcon`. Uses `React.useId()` for accessible `htmlFor`. Integrates with react-hook-form via `register()` |
+| `Dropdown`      | Generic custom dropdown `<T extends string \| number>` — `options[]`, `searchable` with filter, `leftIcon`, `error`. Fully controlled via `value`/`onChange`, closing on click-outside and Escape |
+| `PasswordField` | Password input with show/hide toggle (Eye/EyeOff from lucide-react). Integrates with react-hook-form |
+
+### Features — Clients (`src/components/features/clients/`)
+
+| Component            | Description                                                                                                                       |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `ClientFormModal`    | Create/Edit form — name, email, phone, company, status (dropdown), user (searchable dropdown). Zod `CreateClientSchema`/`EditClientSchema`. Auto-detects edit mode via `clientToEdit` prop |
+| `ClientViewModal`    | Read-only detail view — displays all fields plus associated user name fetched asynchronously                                      |
+| `DeleteConfirmModal` | Confirmation dialog — shows client name, cancel/confirm buttons                                                                   |
 
 ### Features — Users (`src/components/features/users/`)
 
@@ -128,6 +140,8 @@ All forms use **react-hook-form** with **Zod** schemas via `@hookform/resolvers`
 | `CreateUserSchema` | name, email, password, password_confirmation | name: min 3; password: min 8, uppercase, lowercase, number, special char; passwords must match |
 | `LoginUserSchema`  | email, password                              | email: valid format; password: required                                                        |
 | `EditUserSchema`   | name, email                                  | name: min 3; email: valid format                                                               |
+| `ClientBaseSchema` | name, email, userId, phone?, company?, status?, notes? | name: min 3; email: valid format; userId: required number                          |
+| `CreateClientSchema` / `EditClientSchema` | Extends `ClientBaseSchema` (same shape for create and edit) | same as base                                                              |
 
 Validation errors are displayed inline with red border styling on invalid fields.
 
@@ -135,13 +149,13 @@ Validation errors are displayed inline with red border styling on invalid fields
 
 ## Custom Hook: useModal
 
-`src/hooks/useModal.ts` — Manages modal lifecycle with animated transitions:
+`src/hooks/useModal.ts` — Manages modal lifecycle with animated transitions via `motion/react`:
 
-- Uses `useCallback` for the close handler and `useRef` for debouncing (prevents double-close)
+- Uses `useState(true)` for `isOpen` — triggers `AnimatePresence` exit animation when set to `false`
 - Supports `canClose` option (when `false`, close is a no-op — used for mandatory modals like login/register)
 - Handles **Escape key** via `useEffect` with cleanup
-- Returns: `{ isClosing, handleClose, overlayAnim, dialogAnim }`
-- After close animation (250ms timeout), calls `router.back()` to dismiss URL-based modal state
+- Returns: `{ isOpen, handleClose, handleExitComplete }` — consumed by `<Modal>`
+- `handleExitComplete` fires after exit animation ends (via `AnimatePresence`), then calls `router.back()` to dismiss URL-based modal state
 
 ---
 
@@ -157,6 +171,16 @@ Validation errors are displayed inline with red border styling on invalid fields
 | `loginUser()`   | POST   | `/auth/login`    | Authenticates user  |
 | `updateUser()`  | PUT    | `/users/:id`     | Updates user        |
 | `deleteUser()`  | DELETE | `/users/:id`     | Deletes user        |
+
+`src/services/clientService.ts` — Functions for client API calls:
+
+| Function          | Method | Endpoint       | Notes                           |
+| ----------------- | ------ | -------------- | ------------------------------- |
+| `getClients()`    | GET    | `/clients`     | `cache: "no-store"`             |
+| `getClientById()` | GET    | `/clients/:id` | —                               |
+| `createClient()`  | POST   | `/clients`     | Body: `Omit<Client, "id">`      |
+| `updateClient()`  | PUT    | `/clients/:id` | Body: partial client data       |
+| `deleteClient()`  | DELETE | `/clients/:id` | Deletes client                  |
 
 **API Route** (`src/app/api/register/activate/route.ts`): Proxies email activation tokens to `POST ${BACKEND_API_URL}/auth/register-complete`, then redirects to `/auth/login?activated=true`.
 
@@ -240,11 +264,18 @@ npm run dev
     │   └── 📂 dashboard/
     │       ├── 🏠 layout.tsx         # Dashboard layout (sidebar + header + footer)
     │       ├── 🏠 page.tsx           # Dashboard home (user/client summary)
-    │       └── 📂 users/
-    │           ├── 🏠 page.tsx       # Users CRUD table
-    │           └── ⚠️ error.tsx      # Error boundary for users route
+    │       ├── 📂 users/
+    │       │   ├── 🏠 page.tsx       # Users CRUD table
+    │       │   └── ⚠️ error.tsx      # Error boundary for users route
+    │       └── 📂 clients/
+    │           ├── 🏠 page.tsx       # Clients CRUD table (with modals via searchParams)
+    │           └── ⚠️ error.tsx      # Error boundary for clients route
     ├── 📂 components/
     │   ├── 📂 features/
+    │   │   ├── 📂 clients/
+    │   │   │   ├── 🗑️ delete-confirm-modal.tsx
+    │   │   │   ├── ✏️ client-form-modal.tsx
+    │   │   │   └── 👁️ client-view-modal.tsx
     │   │   └── 📂 users/
     │   │       ├── 🗑️ delete-confirm-modal.tsx
     │   │       ├── ✏️ user-form-modal.tsx
@@ -258,15 +289,20 @@ npm run dev
     │   └── 📂 ui/
     │       ├── 🏷️ badge.tsx
     │       ├── 🪟 modal.tsx
+    │       ├── 📝 input.tsx
+    │       ├── 📋 dropdown.tsx
     │       └── 🔒 password-field.tsx
     ├── 📂 hooks/
     │   └── 🪝 useModal.ts            # Modal lifecycle hook (animations, Escape key)
     ├── 📂 schemas/
-    │   └── 💎 userSchema.ts          # Zod schemas (Create, Login, Edit)
+    │   ├── 💎 userSchema.ts          # Zod schemas (Create, Login, Edit)
+    │   └── 💎 clientSchema.ts        # Zod schemas (Base, Create, Edit)
     ├── 📂 services/
-    │   └── 🔗 userService.ts         # Backend API functions (CRUD + Auth)
+    │   ├── 🔗 userService.ts         # Backend API functions (CRUD + Auth)
+    │   └── 🔗 clientService.ts       # Backend API functions (CRUD)
     ├── 📂 types/
-    │   └── 📐 user.ts                # User TypeScript interface
+    │   ├── 📐 user.ts                # User TypeScript interface
+    │   └── 📐 client.ts              # Client TypeScript interface
     └── 📂 utils/
         └── 🛠️ utils.ts               # getInitials(), formatDate()
 ```
@@ -295,11 +331,11 @@ A REST API built with Node.js as a showcase project for **software engineering b
 
 ## 🏗️ Architecture & Best Practices
 
-- **Modular Monolith**: Code organized by domain modules (`auth`, `users`, `reports`) inside `src/modules/`, with shared infrastructure in `src/shared/`.
+- **Modular Monolith**: Code organized by domain modules (`auth`, `users`, `clients`, `reports`) inside `src/modules/`, with shared infrastructure in `src/shared/`.
 - **Repository Pattern + DI**: `UserController` and `AuthController` receive `IUserRepository` via constructor injection. By using factories (`src/factories/`) to wire the concrete Prisma implementation, the controllers remain fully decoupled from the database layer (Dependency Inversion). This architecture enables a seamless transition from PostgreSQL to any other database adapter simply by swapping the injected implementation.
 - **Use Case Layer**: Business logic encapsulated in dedicated Use Cases (`LoginUseCase`, `RegisterStartUseCase`, `RegisterCompleteUseCase`) following the Single Responsibility Principle.
 - **API / Worker Separation**: The report worker runs in an independent Node process (`npm run start:workers`), consuming jobs from the Redis queue while the API remains responsive.
-- **Bull Board Dashboard**: Real-time queue monitoring at `/admin/queues` via Bull Board with basic auth protection.
+- **Bull Board Dashboard**: Real-time queue monitoring at `/admin/queues` via Bull Board.
 - **Prisma with Driver Adapters**: Native PostgreSQL connection pool (`pg`) adapted to Prisma via `@prisma/adapter-pg`, ensuring performance and typed migrations.
 
 ---
@@ -330,7 +366,7 @@ The schema includes the following relational entities:
 - **User CRUD**: List (paginated with `skip`/`take`), find by ID, update, delete — all via Repository Pattern with automatic password stripping.
 - **Client & Task Modeling**: Full relational model with soft delete support, status enums, and priority levels.
 - **Async Reports**: Background data generation — the API enqueues a job in BullMQ (202 Accepted), and the worker processes it independently (updates task status: `todo → in_progress → done`).
-- **Bull Board Dashboard**: Admin UI at `/admin/queues` for real-time monitoring of queued jobs.
+- **Bull Board Dashboard**: Admin UI at `/admin/queues` for real-time monitoring of queued jobs (Basic Auth credentials configured via env vars).
 - **Automated Seed**: Realistic mock data with @faker-js/faker.
 - **Global Error Handling**: Centralized middleware handling Prisma errors, `AppError` instances, and unexpected errors with proper HTTP status codes.
 
@@ -348,8 +384,13 @@ The schema includes the following relational entities:
 | `GET`    | `/users/:id`              | Get user by ID                                            | No         |
 | `PUT`    | `/users/:id`              | Update user                                               | No         |
 | `DELETE` | `/users/:id`              | Delete user                                               | No         |
+| `GET`    | `/clients/`               | List clients                                              | No         |
+| `GET`    | `/clients/:id`            | Get client by ID                                          | No         |
+| `POST`   | `/clients`                | Create client                                             | No         |
+| `PUT`    | `/clients/:id`            | Update client                                             | No         |
+| `DELETE` | `/clients/:id`            | Delete client                                             | No         |
 | `POST`   | `/api/relatorio`          | Trigger async report generation                           | No         |
-| `GET`    | `/admin/queues/*`         | Bull Board dashboard (Basic Auth)                         | Basic Auth |
+| `GET`    | `/admin/queues/*`         | Bull Board dashboard                                      | No         |
 
 ---
 
@@ -357,11 +398,11 @@ The schema includes the following relational entities:
 
 | Pattern                   | Where                                                                        | Benefit                                                                     |
 | ------------------------- | ---------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| **Repository**            | `IUserRepository` (interface) → `PrismaUserRepository` (concrete)            | Isolates data access logic; swap ORM/database without impacting controllers |
-| **Dependency Injection**  | `user-factory.ts` wires `PrismaUserRepository` into controllers              | Facilitates testing with in-memory mocks; adheres to SOLID DIP              |
+| **Repository**            | `IUserRepository` → `PrismaUserRepository`, `IClientRepository` → `PrismaClientRepository` | Isolates data access logic; swap ORM/database without impacting controllers |
+| **Dependency Injection**  | `user-factory.ts`, `client-factory.ts` wire repositories into controllers    | Facilitates testing with in-memory mocks; adheres to SOLID DIP              |
 | **Use Case**              | `LoginUseCase`, `RegisterStartUseCase`, `RegisterCompleteUseCase`            | Encapsulates business logic; each class handles one operation               |
 | **Single Responsibility** | Controllers handle HTTP, Use Cases handle business, Repositories handle data | Cohesive and independently testable code                                    |
-| **Modular Organization**  | `src/modules/{auth,users,reports}/`                                          | Domain-driven structure; each module owns its routes, controllers, services |
+| **Modular Organization**  | `src/modules/{auth,users,clients,reports}/`                                  | Domain-driven structure; each module owns its routes, controllers, services |
 | **Background Worker**     | ReportService → BullMQ Queue → ReportWorker                                  | Heavy processing doesn't block the API response                             |
 | **Error Objects**         | `AppError` (custom class) + `PrismaErrorHandler` (static formatter)          | Semantic and centralized error handling with proper HTTP status mapping     |
 
@@ -541,7 +582,8 @@ npm test
     │   ├── ⚙️ env.ts                    # Env var validation & export
     │   └── 🔗 redisConfig.ts            # Redis connection config
     ├── 📂 factories/
-    │   └── 🔧 user-factory.ts           # DI factory: wires PrismaUserRepository into controllers
+    │   ├── 🔧 user-factory.ts           # DI factory: wires PrismaUserRepository into controllers
+    │   └── 🔧 client-factory.ts         # DI factory: wires PrismaClientRepository into controllers
     ├── 📂 lib/
     │   └── 🗄️ prisma.ts                 # PrismaClient singleton (driver adapter pattern)
     ├── 📂 modules/
@@ -554,6 +596,14 @@ npm test
     │   │   ├── 📋 report.routes.ts      # POST /api/relatorio
     │   │   ├── ⚙️ report.service.ts     # Business logic: create task + enqueue job
     │   │   └── ⚙️ report.worker.ts      # BullMQ worker: background report processing
+    │   ├── 📂 clients/
+    │   │   ├── 📂 repository/
+    │   │   │   ├── 💎 prisma/
+    │   │   │   │   └── 💾 client.prisma.repository.ts  # Concrete Prisma implementation
+    │   │   │   └── 📄 client.repository.interface.ts   # IClientRepository interface
+    │   │   ├── 📂 useCases/
+    │   │   ├── 👤 client.controller.ts   # Client CRUD
+    │   │   └── 👤 client.routes.ts       # CRUD routes
     │   └── 📂 users/
     │       ├── 📂 repository/
     │       │   ├── 💎 prisma/
