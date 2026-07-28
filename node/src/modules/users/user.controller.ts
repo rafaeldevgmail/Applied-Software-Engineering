@@ -8,8 +8,12 @@ export class UserController {
   //Index - Listar todos os usuários
   index = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { skip, take, role } = req.query;
-      const users = await this.userRepository.findAll({ skip, take, role });
+      const { page, limit, role } = req.query;
+      const users = await this.userRepository.findAll({
+        page: page ? Number(page) : undefined,
+        limit: limit ? Number(limit) : undefined,
+        role: role ? String(role) : undefined,
+      });
       return res.status(200).json(users);
     } catch (error) {
       next(error);

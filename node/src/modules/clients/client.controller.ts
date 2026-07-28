@@ -7,8 +7,12 @@ export class ClientController {
   // Index - listar clientes
   index = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { skip, take, role } = req.query;
-      const clients = await this.clientRepository.findAll({ skip, take, role });
+      const { page, limit, role } = req.query;
+      const clients = await this.clientRepository.findAll({
+        page: page ? Number(page) : undefined,
+        limit: limit ? Number(limit) : undefined,
+        role: role ? String(role) : undefined,
+      });
       return res.status(200).json(clients);
     } catch (error) {
       next(error);
