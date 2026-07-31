@@ -17,11 +17,18 @@ interface PageProps {
     editId?: string;
     deleteId?: string;
     viewId?: string;
+    page?: string; // 1. Adicionado o parâmetro page
   }>;
 }
 export default async function ClientsListPage({ searchParams }: PageProps) {
-  const { modal, editId, deleteId, viewId } = await searchParams;
-  const { data: clients, meta: meta } = await getClients();
+  const resolvedParams = await searchParams;
+  const { modal, editId, deleteId, viewId, page } = resolvedParams;
+
+  const currentPage = Number(page) || 1;
+
+  const { data: clients, meta } = await getClients({
+    page: currentPage,
+  });
 
   const findClient = (id) =>
     id && clients ? clients.find((client) => client.id === Number(id)) : null;
@@ -144,24 +151,51 @@ export default async function ClientsListPage({ searchParams }: PageProps) {
         </div>
 
         {/* Paginação / Rodapé */}
-        <div className="px-6 py-4 bg-white/[0.01] border-t border-white/5 flex items-center justify-between flex-wrap gap-4 text-xs text-slate-400">
+        <div className="px-6 py-4 bg-white/[0.01] border-t border-white/5 flex items-center justify-between flex-wrap gap-4 text-xs">
           <span>
             Página <b>{meta.page}</b> de <b>{meta.totalPages}</b> ( {meta.total}{" "}
             clientes )
           </span>
           <div className="flex items-center gap-2">
-            <button
-              className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-white disabled:opacity-40 disabled:hover:bg-white/5 transition"
-              disabled
-            >
-              Anterior
-            </button>
-            <button
-              className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-white disabled:opacity-40 disabled:hover:bg-white/5 transition"
-              disabled
-            >
-              Próximo
-            </button>
+            {/* Botão Anterior */}
+            {currentPage > 1 ? (
+              <Link
+                href={{
+                  pathname: "/dashboard/clients",
+                  query: { ...resolvedParams, page: currentPage - 1 },
+                }}
+                className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 enabled:cursor-pointer hover:bg-white/10 disabled:opacity-40 disabled:hover:bg-white/5 transition"
+              >
+                Anterior
+              </Link>
+            ) : (
+              <button
+                disabled
+                className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 enabled:cursor-pointer hover:bg-white/10 disabled:opacity-40 disabled:hover:bg-white/5 transition"
+              >
+                Anterior
+              </button>
+            )}
+
+            {/* Botão Próximo */}
+            {currentPage < meta.totalPages ? (
+              <Link
+                href={{
+                  pathname: "/dashboard/clients",
+                  query: { ...resolvedParams, page: currentPage + 1 },
+                }}
+                className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 enabled:cursor-pointer hover:bg-white/10 disabled:opacity-40 disabled:hover:bg-white/5 transition"
+              >
+                Próximo
+              </Link>
+            ) : (
+              <button
+                disabled
+                className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 enabled:cursor-pointer hover:bg-white/10 disabled:opacity-40 disabled:hover:bg-white/5 transition"
+              >
+                Próximo
+              </button>
+            )}
           </div>
         </div>
       </div>

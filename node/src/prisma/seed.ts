@@ -1,14 +1,14 @@
 import prisma from "@/lib/prisma.ts";
-import { faker } from "@faker-js/faker";
+import { fakerPT_BR as faker } from "@faker-js/faker";
 import bcrypt from "bcrypt";
 
 // const prisma = new PrismaClient();
 
 async function main() {
   console.log("Limpar banco de dados...");
-  await prisma.task.deleteMany({});
+  /*await prisma.task.deleteMany({});
   await prisma.client.deleteMany({});
-  await prisma.user.deleteMany({});
+  await prisma.user.deleteMany({});*/
 
   console.log("Criando usuário de teste (Rafael)...");
   const salt = await bcrypt.genSalt(10);
@@ -22,8 +22,15 @@ async function main() {
     },
   });
 
-  console.log("Gerando mockups de Clientes e Tarefas...");
-  for (let i = 0; i < 5; i++) {
+  console.log("Gerando mockups de Usuários, Clientes e Tarefas...");
+  for (let i = 0; i < 10; i++) {
+    const user = await prisma.user.create({
+      data: {
+        name: faker.person.fullName(),
+        email: faker.internet.email(),
+        password: defaultPassword,
+      },
+    });
     const client = await prisma.client.create({
       data: {
         userId: mainUser.id,
