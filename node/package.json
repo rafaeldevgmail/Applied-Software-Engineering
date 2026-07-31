@@ -12,12 +12,12 @@
     "dev:watch": "tsx watch src/shared/infra/http/server.ts",
     "test": "npx prisma generate && vitest run",
     "test:watch": "npx prisma generate && npx tsx src/tests/integration/queue.test.ts",
-    "db:seed": "npx prisma generate && node src/prisma/seed.ts",
+    "db:seed": "npx prisma generate && tsx src/prisma/seed.ts",
     "start:workers": "tsx src/shared/infra/workers/index.ts",
     "start": "tsx src/shared/infra/http/server.ts"
   },
   "prisma": {
-    "seed": "node src/prisma/seed.ts"
+    "seed": "tsx src/prisma/seed.ts"
   },
   "dependencies": {
     "@bull-board/api": "^8.0.1",
@@ -33,7 +33,6 @@
     "jsonwebtoken": "^9.0.3",
     "nodemailer": "^9.0.3",
     "pg": "^8.21.0",
-    "stripe": "^22.1.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {
