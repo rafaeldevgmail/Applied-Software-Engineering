@@ -6,6 +6,8 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 config.autoAddCss = false; // Desativa a injeção automática para evitar conflitos
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import { signOut } from "next-auth/react";
 import {
   faChartPie,
   faFolder,
@@ -14,7 +16,7 @@ import {
   faUser,
   faRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
-export default function Sidebar() {
+export default function Sidebar(session: any) {
   const pathname = usePathname();
   return (
     <aside className="lg:col-span-2 glass-sidebar">
@@ -66,18 +68,32 @@ export default function Sidebar() {
         <div className="flex items-center gap-3">
           <div className="relative">
             <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-pink-500 p-[2px]">
-              <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center overflow-hidden">
-                <FontAwesomeIcon icon={faUser} />
+              <div className="w-full h-full rounded-full  flex items-center justify-center overflow-hidden">
+                {session?.session?.user?.image ? (
+                  <img
+                    src={session?.session?.user?.image}
+                    alt={session?.session?.user?.name}
+                  />
+                ) : (
+                  <FontAwesomeIcon icon={faUser} />
+                )}
               </div>
             </div>
             <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[#120f24] rounded-full"></span>
           </div>
           <div>
-            <h4 className="text-xs font-semibold ">Rafael Eziquiel</h4>
-            <span className="text-[10px] ">Full Stack Dev</span>
+            <h4 className="text-xs font-semibold ">
+              {session?.session?.user?.name}
+            </h4>
+            <span className="text-[10px] ">
+              {session?.session?.user?.email}
+            </span>
           </div>
         </div>
-        <button className="cursor-pointer hover: transition-colors duration-200">
+        <button
+          className="cursor-pointer hover: transition-colors duration-200"
+          onClick={() => signOut()}
+        >
           <FontAwesomeIcon icon={faRightFromBracket} />
         </button>
       </div>

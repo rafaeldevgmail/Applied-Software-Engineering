@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+import { auth } from "@/auth";
 import Header from "@/components/layout/header";
 import Sidebar from "@/components/layout/sidebar";
 import Footer from "@/components/layout/footer";
@@ -5,7 +7,11 @@ interface DashboardProps {
   children?: React.ReactNode;
 }
 
-export default function Dashboard({ children }: DashboardProps) {
+export default async function Dashboard({ children }: DashboardProps) {
+  const session = await auth();
+  // if (!session) {
+  //   redirect("/auth/login");
+  // }
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main className="flex flex-1 w-full flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
@@ -15,7 +21,7 @@ export default function Dashboard({ children }: DashboardProps) {
 
         <div className="glass-container">
           <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[750px]">
-            <Sidebar />
+            <Sidebar session={session} />
 
             <main className="lg:col-span-10 p-6 md:p-8 flex flex-col justify-between">
               <Header
