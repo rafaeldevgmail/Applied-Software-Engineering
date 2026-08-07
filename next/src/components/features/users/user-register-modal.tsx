@@ -102,6 +102,13 @@ export function UserRegisterModal() {
         </div>
         <div className="flex justify-end gap-3 pt-4">
           <button
+            type="button"
+            onClick={(back) => router.back()}
+            className="px-4 py-2 text-sm font-medium border border-zinc-200 dark:border-zinc-600 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 cursor-pointer"
+          >
+            Voltar
+          </button>
+          <button
             type="submit"
             disabled={isSubmitting}
             className="px-4 py-2 text-sm font-medium bg-purple-600 text-white rounded-lg hover:bg-purple-500 disabled:opacity-50 cursor-pointer"

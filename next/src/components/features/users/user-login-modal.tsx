@@ -1,4 +1,4 @@
-// "use client";
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -13,6 +13,7 @@ import { toast } from "react-hot-toast";
 import { Eye, EyeOff } from "lucide-react";
 import { PasswordField } from "@/components/ui/password-field";
 import { Input } from "@/components/ui/input";
+import { GithubLoginButton } from "@/components/features/users/github-login-button";
 
 //Importar icones de lucide-react
 import { User as UserIcon, Mail } from "lucide-react";
@@ -85,7 +86,21 @@ export function UserLoginModal() {
             register={register("password")}
           />
         </div>
+        <div className="flex items-center gap-3">
+          <div className="h-px flex-1 bg-zinc-500" />
+          <span className="text-xs text-zinc-500">ou</span>
+          <div className="h-px flex-1 bg-zinc-500" />
+        </div>
+        <GithubLoginButton />
+
         <div className="flex justify-end gap-3 pt-4">
+          <button
+            type="button"
+            onClick={(back) => router.back()}
+            className="px-4 py-2 text-sm font-medium border border-zinc-200 dark:border-zinc-600 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 cursor-pointer"
+          >
+            Voltar
+          </button>
           <button
             type="submit"
             disabled={isSubmitting}
