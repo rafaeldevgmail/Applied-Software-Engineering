@@ -3,7 +3,9 @@ import { IUserRepository } from "@/modules/users/repository/user.repository.inte
 import { AppError } from "@/shared/errors/AppError.ts";
 
 export class UserController {
-  constructor(private userRepository: IUserRepository) {}
+  constructor(private userRepository: IUserRepository) {
+    this.getByEmail = this.getByEmail.bind(this);
+  }
 
   //Index - Listar todos os usuários
   index = async (req: Request, res: Response, next: NextFunction) => {
@@ -62,6 +64,24 @@ export class UserController {
       }
       const userToShow = await this.userRepository.findById(userId);
       return res.status(200).json(userToShow);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  //GetByEmail - Buscar usuário por email
+  getByEmail = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { email } = req.params;
+      //lowercase email to ensure case-insensitive search
+      const emailLower = email.toLowerCase();
+      console.log(`Searching for user with email: ${emailLower}`);
+      //PROCURAR NO BANCO AMAIL EM LOWERCASE TAMBÈM
+      const user = await this.userRepository.findByEmail(emailLower);
+      if (!user) {
+        return res.status(404).json({ message: "Usuário nao encontrado." });
+      }
+      return res.status(200).json(user);
     } catch (error) {
       next(error);
     }

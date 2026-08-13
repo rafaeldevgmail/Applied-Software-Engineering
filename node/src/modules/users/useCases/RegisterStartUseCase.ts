@@ -10,13 +10,19 @@ export class RegisterStartUseCase {
 
   async execute(req: Request, res: Response, next: NextFunction) {
     // Recupera os dados do corpo da requisição
-    const { name, email, password, password_confirmation } = req.body;
+    const { name, email, password, password_confirmation, oauth } = req.body;
 
-    if (!name || !email || !password || !password_confirmation) {
-      throw new AppError("Todos os campos são obrigatórios", 400);
-    }
-    if (password !== password_confirmation) {
-      throw new AppError("As senhas não coincidem", 400);
+    if (!oauth) {
+      if (!name || !email || !password || !password_confirmation) {
+        throw new AppError("Todos os campos são obrigatórios", 400);
+      }
+      if (password !== password_confirmation) {
+        throw new AppError("As senhas não coincidem", 400);
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      req.body.password = hashedPassword;
     }
 
     // Verifica se o usuário já existe no banco
@@ -24,10 +30,6 @@ export class RegisterStartUseCase {
     if (userExists) {
       throw new AppError("Este email já está sendo utilizado", 409);
     }
-
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-    req.body.password = hashedPassword;
 
     //Assina os dados no JWT com expiração de 1 hora
     const registrationToken = jwt.sign(
