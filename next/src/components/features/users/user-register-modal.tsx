@@ -100,7 +100,7 @@ export function UserRegisterModal() {
             register={register("password_confirmation")}
           />
         </div>
-        <div className="flex justify-end gap-3 pt-4">
+        <div className="flex justify-between gap-3 pt-4">
           <button
             type="button"
             onClick={(back) => router.back()}

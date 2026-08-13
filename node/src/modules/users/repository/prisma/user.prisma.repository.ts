@@ -18,6 +18,7 @@ export interface PaginationOptions {
   page?: number;
   limit?: number;
   role?: string;
+  email?: string;
 }
 
 export interface PaginatedResult<T> {
@@ -34,6 +35,9 @@ export class PrismaUserRepository implements IUserRepository {
   // --- CREATE ---
   async create(data: any): Promise<UserPublic | null> {
     const { password_confirmation, ...prismaData } = data;
+    if (prismaData.email) {
+      prismaData.email = prismaData.email.toLowerCase();
+    }
     return prisma.user.create({
       data: prismaData,
       select: userSelect,
@@ -48,7 +52,7 @@ export class PrismaUserRepository implements IUserRepository {
   //--- FIND ONE ---
   async findByEmail(email: string): Promise<UserPublic | null> {
     return prisma.user.findUnique({
-      where: { email },
+      where: { email: email.toLowerCase() },
       select: userSelect,
     });
   }
@@ -89,6 +93,9 @@ export class PrismaUserRepository implements IUserRepository {
 
   // --- UPDATE ---
   async update(id: number, data: any): Promise<UserPublic | null> {
+    if (data.email) {
+      data.email = data.email.toLowerCase();
+    }
     return prisma.user.update({
       where: { id },
       data,
@@ -107,7 +114,7 @@ export class PrismaUserRepository implements IUserRepository {
   //--- GET PASSWORD ---
   async getPassByEmail(email: string): Promise<User | null> {
     return prisma.user.findUnique({
-      where: { email },
+      where: { email: email.toLowerCase() },
     });
   }
 }

@@ -8,7 +8,7 @@ import { User } from "@/types/user"; // Importe a tipagem do usuário
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginUserSchema, LoginUserFormData } from "@/schemas/userSchema"; // Importe o schema de validação
-import { loginUser } from "@/services/userService";
+import { signIn } from "next-auth/react";
 import { toast } from "react-hot-toast";
 import { Eye, EyeOff } from "lucide-react";
 import { PasswordField } from "@/components/ui/password-field";
@@ -39,7 +39,16 @@ export function UserLoginModal() {
   const onSubmit = async (data: LoginUserFormData) => {
     setIsSubmitting(true);
     try {
-      await loginUser(data);
+      const result = await signIn("credentials", {
+        redirect: false,
+        email: data.email,
+        password: data.password,
+      });
+      if (result?.error) {
+        toast.error("Erro ao efetuar o login. Verifique suas credenciais.");
+        return;
+      }
+      console.log("Result do login:", result);
       toast.success("Login efetuado com sucesso!");
 
       handleClose();
@@ -86,28 +95,47 @@ export function UserLoginModal() {
             register={register("password")}
           />
         </div>
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          Esqueceu a senha?{" "}
+          <a
+            href="/auth/forgot-password"
+            className="text-blue-500 dark:text-blue-400 hover:underline"
+          >
+            Clique aqui
+          </a>
+        </p>
         <div className="flex items-center gap-3">
-          <div className="h-px flex-1 bg-zinc-500" />
-          <span className="text-xs text-zinc-500">ou</span>
-          <div className="h-px flex-1 bg-zinc-500" />
+          <div className="h-px flex-1 bg-zinc-500 dark:bg-zinc-400" />
+          <span className="text-xs text-zinc-500 dark:text-zinc-400">ou</span>
+          <div className="h-px flex-1 bg-zinc-500 dark:bg-zinc-400" />
         </div>
         <GithubLoginButton />
-
-        <div className="flex justify-end gap-3 pt-4">
-          <button
-            type="button"
-            onClick={(back) => router.back()}
-            className="px-4 py-2 text-sm font-medium border border-zinc-200 dark:border-zinc-600 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 cursor-pointer"
-          >
-            Voltar
-          </button>
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="px-4 py-2 text-sm font-medium bg-purple-600 text-white rounded-lg hover:bg-purple-500 disabled:opacity-50 cursor-pointer"
-          >
-            {isSubmitting ? "Efetuando Login..." : "Login"}
-          </button>
+        <div className="flex  justify-between">
+          <div className="flex justify-start gap-3">
+            <button
+              type="button"
+              onClick={(back) => router.back()}
+              className="px-4 py-2 text-sm font-medium border border-zinc-200 dark:border-zinc-600 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 cursor-pointer"
+            >
+              Voltar
+            </button>
+          </div>
+          <div className="flex justify-end gap-3">
+            <button
+              type="button"
+              className="px-4 py-2 text-sm font-medium border border-zinc-200 dark:border-zinc-600 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 cursor-pointer"
+              onClick={() => router.push("/auth/register")}
+            >
+              Criar Conta
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="px-4 py-2 text-sm font-medium bg-purple-600 text-white rounded-lg hover:bg-purple-500 disabled:opacity-50 cursor-pointer"
+            >
+              {isSubmitting ? "Efetuando Login..." : "Login"}
+            </button>
+          </div>
         </div>
       </form>
     </Modal>

@@ -18,7 +18,8 @@ model User {
   email           String        @unique
   // ? Permite null
   emailVerifiedAt DateTime?     @map("email_verified_at")
-  password        String
+  password        String?
+  oauth           Boolean?      @default(false)
   rememberToken   String?       @map("remember_token")
   createdAt       DateTime      @default(now()) @map("created_at")
   updatedAt       DateTime      @updatedAt @map("updated_at")

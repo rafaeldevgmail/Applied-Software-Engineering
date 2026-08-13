@@ -64,15 +64,16 @@ export default function Sidebar(session: any) {
         </nav>
       </div>
 
-      <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between px-2">
-        <div className="flex items-center gap-3">
-          <div className="relative">
+      <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between px-2 gap-2">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="relative shrink-0">
             <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-pink-500 p-[2px]">
-              <div className="w-full h-full rounded-full  flex items-center justify-center overflow-hidden">
+              <div className="w-full h-full rounded-full flex items-center justify-center overflow-hidden">
                 {session?.session?.user?.image ? (
                   <img
                     src={session?.session?.user?.image}
                     alt={session?.session?.user?.name}
+                    className="w-full h-full object-cover"
                   />
                 ) : (
                   <FontAwesomeIcon icon={faUser} />
@@ -81,17 +82,19 @@ export default function Sidebar(session: any) {
             </div>
             <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[#120f24] rounded-full"></span>
           </div>
-          <div>
-            <h4 className="text-xs font-semibold ">
+
+          <div className="min-w-0 flex-1">
+            <h4 className="text-xs font-semibold truncate">
               {session?.session?.user?.name}
             </h4>
-            <span className="text-[10px] ">
+            <span className="text-[10px] block truncate text-gray-500 dark:text-gray-400">
               {session?.session?.user?.email}
             </span>
           </div>
         </div>
+
         <button
-          className="cursor-pointer hover: transition-colors duration-200"
+          className="cursor-pointer hover:text-white transition-colors duration-200 shrink-0 p-1"
           onClick={() => signOut()}
         >
           <FontAwesomeIcon icon={faRightFromBracket} />

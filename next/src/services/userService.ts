@@ -60,7 +60,10 @@ export async function createUser(data: Omit<User, "id">) {
   });
 
   if (!response.ok) {
-    throw new Error(`Erro ao criar usuário: ${response.status}`);
+    const errorData = await response.json().catch(() => null);
+    throw new Error(
+      errorData?.message || `Erro ao criar usuário: ${response.status}`,
+    );
   }
 
   return response.json();
@@ -76,7 +79,10 @@ export async function loginUser(data: Omit<User, "id">) {
   });
 
   if (!response.ok) {
-    throw new Error(`Erro ao logar usuário: ${response.status}`);
+    const errorData = await response.json().catch(() => null);
+    throw new Error(
+      errorData?.message || `Erro ao logar usuário: ${response.status}`,
+    );
   }
 
   return response.json();
