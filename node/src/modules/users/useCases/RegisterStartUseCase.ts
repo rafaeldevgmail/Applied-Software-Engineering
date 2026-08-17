@@ -3,6 +3,7 @@ import { IUserRepository } from "@/modules/users/repository/user.repository.inte
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { AppError } from "@/shared/errors/AppError.ts";
+import { Mailer } from "@/lib/mailer.ts";
 import * as nodemailer from "nodemailer";
 
 export class RegisterStartUseCase {
@@ -39,21 +40,9 @@ export class RegisterStartUseCase {
     );
     const confirmationLink = `${process.env.FRONTEND_URL}/api/register/activate?token=${registrationToken}`;
 
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT),
-      secure: false, // true for 465, false for other ports
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-        rejectUnauthorized: false, // Permite certificados autoassinados
-      },
-    });
-
     let info = null;
     try {
-      info = await transporter.sendMail({
-        from: '"No Reply" <noreply@meuapp.com>',
+      info = await Mailer.sendMail({
         to: email,
         subject: `Olá ${name}, Valide sua conta! ✔`,
         text: `Olá ${name}, por favor valide sua conta clicando no link: ${confirmationLink}`,
