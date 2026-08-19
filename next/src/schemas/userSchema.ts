@@ -20,7 +20,9 @@ export const CreateUserSchema = UserBaseSchema.extend({
       /[^A-Za-z0-9]/,
       "A senha deve conter pelo menos um caractere especial (@, #, $, etc.)",
     ),
-  password_confirmation: z.string().min(1, "A senha é obrigatória"),
+  password_confirmation: z
+    .string()
+    .min(1, "A confirmação da senha é obrigatória"),
 }).refine((data) => data.password === data.password_confirmation, {
   message: "As senhas precisam ser iguais",
   path: ["password_confirmation"],
@@ -32,7 +34,40 @@ export const LoginUserSchema = z.object({
 });
 export const EditUserSchema = UserBaseSchema.extend({});
 
+export const ForgotPasswordSchema = z.object({
+  email: z.string().min(1, "O e-mail é obrigatório").email("E-mail inválido"),
+});
+
+export const ResetPasswordSchema = z
+  .object({
+    token: z.string().min(1, "O token de redefinição é obrigatório"),
+    password: z
+      .string()
+      .min(1, "A senha é obrigatória")
+      .min(8, "A senha deve ter pelo menos 8 caracteres")
+      .regex(/[A-Z]/, "A senha deve conter pelo menos uma letra maiúscula")
+      .regex(/[a-z]/, "A senha deve conter pelo menos uma letra minúscula")
+      .regex(/[0-9]/, "A senha deve conter pelo menos um número")
+      .regex(
+        /[^A-Za-z0-9]/,
+        "A senha deve conter pelo menos um caractere especial (@, #, $, etc.)",
+      ),
+    password_confirmation: z
+      .string()
+      .min(1, "A confirmação da senha é obrigatória"),
+  })
+  .refine((data) => data.password === data.password_confirmation, {
+    message: "As senhas precisam ser iguais",
+    path: ["password_confirmation"],
+  });
+
+export const ResendRegisterTokenSchema = z.object({
+  email: z.string().min(1, "O e-mail é obrigatório").email("E-mail inválido"),
+});
+
 export type CreateUserFormData = z.infer<typeof CreateUserSchema>;
 export type EditUserFormData = z.infer<typeof EditUserSchema>;
 export type LoginUserFormData = z.infer<typeof LoginUserSchema>;
 export type UserBaseFormData = z.infer<typeof UserBaseSchema>;
+export type ForgotPasswordFormData = z.infer<typeof ForgotPasswordSchema>;
+export type ResetPasswordFormData = z.infer<typeof ResetPasswordSchema>;

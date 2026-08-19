@@ -84,6 +84,7 @@ export function UserLoginModal() {
             {...register("email")}
             error={errors.email?.message}
             placeholder="nome@empresa.com"
+            autoComplete="email"
             leftIcon={<Mail />}
           />
 
@@ -115,7 +116,7 @@ export function UserLoginModal() {
             <button
               type="button"
               onClick={(back) => router.back()}
-              className="px-4 py-2 text-sm font-medium border border-zinc-200 dark:border-zinc-600 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 cursor-pointer"
+              className="bg-white/30 hover:bg-white/50 dark:bg-white/10 dark:hover:bg-white/20 font-medium py-2.5 px-4 rounded-xl border border-white/10 transition text-sm cursor-pointer"
             >
               Voltar
             </button>
@@ -123,7 +124,7 @@ export function UserLoginModal() {
           <div className="flex justify-end gap-3">
             <button
               type="button"
-              className="px-4 py-2 text-sm font-medium border border-zinc-200 dark:border-zinc-600 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 cursor-pointer"
+              className="bg-white/30 hover:bg-white/50 dark:bg-white/10 dark:hover:bg-white/20 font-medium py-2.5 px-4 rounded-xl border border-white/10 transition text-sm cursor-pointer"
               onClick={() => router.push("/auth/register")}
             >
               Criar Conta

@@ -1,24 +1,70 @@
-// components/Badge.tsx
 import React from "react";
 
 interface BadgeProps {
   children: React.ReactNode;
-  variant?: "default" | "success" | "danger" | "warning";
+  type?: "default" | "success" | "danger" | "warning" | "purple";
+  theme?: "default" | "light";
 }
 
-export default function Badge({ children, variant = "default" }: BadgeProps) {
-  // Mapeamento de cores baseado na variante
-  const variants = {
-    default: "status-badge-info",
-    success: "status-badge-active",
-    danger: "status-badge-danger",
-    warning: "status-badge-pending",
-  };
+export default function Badge({
+  children,
+  type = "default",
+  theme = "default",
+}: BadgeProps) {
+  const styles = {
+    default: {
+      bg: "bg-sky-500/10",
+      text: "text-sky-400",
+      border: "border-sky-500/20",
+      dot: "bg-sky-400",
+      lightText: "text-sky-500 dark:text-sky-300",
+    },
+    success: {
+      bg: "bg-emerald-500/10",
+      text: "text-emerald-400",
+      border: "border-emerald-500/20",
+      dot: "bg-emerald-400",
+      lightText: " text-emerald-500 dark:text-emerald-300",
+    },
+    danger: {
+      bg: "bg-red-500/10",
+      text: "text-red-400",
+      border: "border-red-500/20",
+      dot: "bg-red-400",
+      lightText: "text-red-500 dark:text-red-300",
+    },
+    warning: {
+      bg: "bg-amber-500/10",
+      text: "text-amber-400",
+      border: "border-amber-500/20",
+      dot: "bg-amber-400",
+      lightText: " text-amber-500 dark:text-amber-300",
+    },
+    purple: {
+      bg: "bg-purple-500/10",
+      text: "text-purple-400",
+      border: "border-purple-500/20",
+      dot: "bg-purple-400",
+      lightText: " text-purple-500 dark:text-purple-300",
+    },
+  }[type];
+
+  if (theme === "light") {
+    return (
+      <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium backdrop-blur-md">
+        <span className={`w-2 h-2 rounded-full ${styles.dot} animate-pulse`} />
+        <span className={styles.lightText}>{children}</span>
+      </span>
+    );
+  }
 
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${variants[variant]}`}
+      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${styles.bg} ${styles.text} border ${styles.border} w-max`}
     >
+      <span
+        className={`w-1.5 h-1.5 rounded-full ${styles.dot} animate-pulse`}
+      ></span>
       {children}
     </span>
   );
