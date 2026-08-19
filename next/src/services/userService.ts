@@ -116,3 +116,60 @@ export async function deleteUser(id: number) {
 
   return response.json();
 }
+
+export async function forgotPassword(data: { email: string }) {
+  const response = await fetch(`${API_URL}/auth/forgot-password`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new Error(
+      errorData?.message ||
+        `Erro ao solicitar redefinição de senha: ${response.status}`,
+    );
+  }
+  return response.json();
+}
+
+export async function resendRegisterToken(data: { email: string }) {
+  const response = await fetch(`${API_URL}/auth/resend-register-token`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new Error(
+      errorData?.message ||
+        `Erro ao reenviar redefinição de senha: ${response.status}`,
+    );
+  }
+  return response.json();
+}
+
+export async function resetPassword(data: {
+  email: string;
+  token: string;
+  password: string;
+}) {
+  const response = await fetch(`${API_URL}/auth/reset-password`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new Error(
+      errorData?.message || `Erro ao redefinir senha: ${response.status}`,
+    );
+  }
+  return response.json();
+}
