@@ -11,6 +11,7 @@ import {
 import { UserFormModal } from "@/components/features/users/user-form-modal";
 import { UserViewModal } from "@/components/features/users/user-view-modal";
 import { DeleteConfirmModal } from "@/components/features/users/delete-confirm-modal";
+import Badge from "@/components/ui/badge";
 interface PageProps {
   searchParams: Promise<{
     modal?: string;
@@ -80,7 +81,7 @@ export default async function UsersListPage({ searchParams }: PageProps) {
                   E-mail
                 </th>
                 <th scope="col" className="px-6 py-4">
-                  Criado em
+                  Status
                 </th>
                 <th scope="col" className="px-6 py-4 text-center">
                   Ações
@@ -114,9 +115,13 @@ export default async function UsersListPage({ searchParams }: PageProps) {
                     </span>
                   </td>
 
-                  {/* Criado em */}
+                  {/* Status */}
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {formatDate(user.createdAt)}
+                    {user.emailVerifiedAt ? (
+                      <Badge type="success">Ativo</Badge>
+                    ) : (
+                      <Badge type="warning">Inativo</Badge>
+                    )}
                   </td>
 
                   {/* Ações */}

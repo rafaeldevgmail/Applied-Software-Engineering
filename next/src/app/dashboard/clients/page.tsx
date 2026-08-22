@@ -11,6 +11,7 @@ import {
 import { ClientFormModal } from "@/components/features/clients/client-form-modal";
 import { ClientViewModal } from "@/components/features/clients/client-view-modal";
 import { DeleteConfirmModal } from "@/components/features/clients/delete-confirm-modal";
+import Badge from "@/components/ui/badge";
 interface PageProps {
   searchParams: Promise<{
     modal?: string;
@@ -79,7 +80,7 @@ export default async function ClientsListPage({ searchParams }: PageProps) {
                   E-mail
                 </th>
                 <th scope="col" className="px-6 py-4">
-                  Criado em
+                  Status
                 </th>
                 <th scope="col" className="px-6 py-4 text-center">
                   Ações
@@ -113,9 +114,15 @@ export default async function ClientsListPage({ searchParams }: PageProps) {
                     </span>
                   </td>
 
-                  {/* Criado em */}
+                  {/* Status */}
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {formatDate(client.createdAt)}
+                    {client.status === "prospect" ? (
+                      <Badge type="info">Prospect</Badge>
+                    ) : client.status === "active" ? (
+                      <Badge type="success">Ativo</Badge>
+                    ) : (
+                      <Badge type="warning">Inativo</Badge>
+                    )}
                   </td>
 
                   {/* Ações */}

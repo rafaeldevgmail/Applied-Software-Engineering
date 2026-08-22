@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -146,11 +148,16 @@
   --scale-50: 1.4; /*0.9*/
   --scale-100: 1.6; /*1.1*/
 }
-@media (prefers-color-scheme: dark) {
+/* antigo código para dark mode
+ @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
+} */
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
 body {
@@ -220,7 +227,12 @@ h3,
     inset 0 1px 1px rgba(255, 255, 255, 0.2),
     0 20px 50px rgba(0, 0, 0, 0.4);
 }
-
+.glass-pill {
+  @apply overflow-visible rounded-3xl border border-white/10 bg-white/5 backdrop-blur-[24px] shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] overflow-hidden z-10;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.2),
+    0 5px 10px rgba(0, 0, 0, 0.2);
+}
 /* Sub-elementos de vidro com diferentes níveis de reflexo */
 .glass-card {
   @apply rounded-2xl border border-white/10 bg-white/5 backdrop-blur-[12px] p-6 transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:-translate-y-1;

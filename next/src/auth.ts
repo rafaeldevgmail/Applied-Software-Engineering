@@ -65,10 +65,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           if (!response.ok) return null;
 
           const data = await response.json();
+          // Garante retorno correto do objeto User
           return {
             id: email,
-            name: data?.user ?? email,
-            email,
+            name: data?.user?.name ?? data?.user ?? email,
+            email: email,
           };
         } catch (error) {
           console.error("Erro ao autenticar no backend:", error);
@@ -96,6 +97,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
       }
       return true;
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.name = user.name;
+        token.email = user.email;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.name = token.name;
+        session.user.email = token.email as string;
+      }
+      return session;
     },
   },
 });

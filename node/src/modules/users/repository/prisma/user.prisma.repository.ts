@@ -9,6 +9,7 @@ export const userSelect = Prisma.validator<Prisma.UserSelect>()({
   email: true,
   createdAt: true,
   updatedAt: true,
+  emailVerifiedAt: true,
   // A senha (password) é omitida por padrão aqui!
 });
 

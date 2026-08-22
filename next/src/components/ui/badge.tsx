@@ -2,17 +2,17 @@ import React from "react";
 
 interface BadgeProps {
   children: React.ReactNode;
-  type?: "default" | "success" | "danger" | "warning" | "purple";
+  type?: "info" | "success" | "danger" | "warning" | "purple";
   theme?: "default" | "light";
 }
 
 export default function Badge({
   children,
-  type = "default",
+  type = "info",
   theme = "default",
 }: BadgeProps) {
   const styles = {
-    default: {
+    info: {
       bg: "bg-sky-500/10",
       text: "text-sky-400",
       border: "border-sky-500/20",
