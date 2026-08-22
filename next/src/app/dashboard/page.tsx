@@ -17,7 +17,7 @@ export default async function DashboardPage() {
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
             <h3 className="font-semibold ">Usuários</h3>
-            <Badge type="default">{metaUsers.total}</Badge>
+            <Badge type="info">{metaUsers.total}</Badge>
           </div>
           <button className="cursor-pointer text-xs text-purple-400 hover:text-purple-300 font-semibold transition-colors">
             <Link href="/dashboard/users">Ver todos</Link>
@@ -41,10 +41,11 @@ export default async function DashboardPage() {
                     <p className="text-[10px] ">{user.email}</p>
                   </div>
                 </div>
-                <span className="status-badge-active">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>{" "}
-                  Ativo
-                </span>
+                {user.emailVerifiedAt ? (
+                  <Badge type="success">Ativo</Badge>
+                ) : (
+                  <Badge type="warning">Inativo</Badge>
+                )}
               </div>
             ))
           ) : (
@@ -75,7 +76,7 @@ export default async function DashboardPage() {
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
             <h3 className="font-semibold ">Clientes</h3>
-            <Badge type="default">{metaClients.total}</Badge>
+            <Badge type="info">{metaClients.total}</Badge>
           </div>
           <button className="cursor-pointer text-xs text-purple-400 hover:text-purple-300 font-semibold transition-colors">
             <Link href="/dashboard/clients">Ver todos</Link>
@@ -99,10 +100,13 @@ export default async function DashboardPage() {
                     <p className="text-[10px] ">{client.email}</p>
                   </div>
                 </div>
-                <span className="status-badge-active">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>{" "}
-                  Ativo
-                </span>
+                {client.status === "prospect" ? (
+                  <Badge type="info">Prospect</Badge>
+                ) : client.status === "active" ? (
+                  <Badge type="success">Ativo</Badge>
+                ) : (
+                  <Badge type="warning">Inativo</Badge>
+                )}
               </div>
             ))
           ) : (

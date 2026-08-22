@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 interface HeaderProps {
   title: string;
   subtitle?: string;
@@ -22,6 +23,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
         </h1>
         <p className="text-sm ">{subtitle}</p>
       </div>
+      <ThemeToggle />
     </header>
   );
 }

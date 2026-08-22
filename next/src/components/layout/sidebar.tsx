@@ -85,10 +85,10 @@ export default function Sidebar({ session }: { session?: any }) {
             <div className="relative shrink-0">
               <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-purple-500 via-indigo-500 to-pink-500 p-[2px] shadow-sm">
                 <div className="w-full h-full rounded-full bg-zinc-900 flex items-center justify-center overflow-hidden">
-                  {session?.session?.user?.image ? (
+                  {session?.user?.image ? (
                     <img
-                      src={session?.session?.user?.image}
-                      alt={session?.session?.user?.name ?? "Avatar"}
+                      src={session?.user?.image}
+                      alt={session?.user?.name ?? "Avatar"}
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -104,10 +104,10 @@ export default function Sidebar({ session }: { session?: any }) {
 
             <div className="min-w-0 flex-1">
               <h4 className="text-xs font-semibold truncate leading-tight">
-                {session?.session?.user?.name || "Usuário"}
+                {session?.user?.name || "Usuário"}
               </h4>
               <span className="text-[11px] block truncate text-zinc-500 font-normal mt-0.5">
-                {session?.session?.user?.email || "usuario@email.com"}
+                {session?.user?.email || "usuario@email.com"}
               </span>
             </div>
           </div>
