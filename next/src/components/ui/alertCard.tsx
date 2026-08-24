@@ -6,6 +6,7 @@ interface AlertCardProps {
   children: React.ReactNode;
   type?: "info" | "success" | "danger" | "warning";
   theme?: "default" | "light";
+  Font?: "sm" | "md" | "lg";
 }
 
 export default function AlertCard({
@@ -13,6 +14,7 @@ export default function AlertCard({
   children,
   type = "info",
   theme = "default",
+  Font = "sm",
 }: AlertCardProps) {
   const styles = {
     info: {
@@ -57,13 +59,18 @@ export default function AlertCard({
       ? `flex items-start space-x-3 rounded-lg border p-3.5 backdrop-blur-sm border-white/5 bg-white/5 ${styles.text}`
       : `flex items-start space-x-3 rounded-lg border p-3.5 backdrop-blur-sm ${styles.border} ${styles.bg} ${styles.text}`;
 
+  const fontSize = {
+    sm: "text-sm",
+    md: "text-base",
+    lg: "text-lg",
+  };
   return (
     <div className={containerClasses}>
       <IconComponent
         className={`h-5 w-5 flex-shrink-0 mt-0.5 animate-pulse ${styles.icon}`}
       />
 
-      <div className="text-sm">
+      <div className={fontSize[Font]}>
         {title && (
           <span className={`font-semibold block ${styles.title}`}>{title}</span>
         )}

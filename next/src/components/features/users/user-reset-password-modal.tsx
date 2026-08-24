@@ -94,7 +94,6 @@ export function UserResetPasswordModal({
       console.log("Senha redefinida com sucesso!");
       toast.success("Senha redefinida com sucesso!", {
         duration: 10000,
-        icon: "✔",
       });
       router.push("/auth/login");
     } catch (error: any) {

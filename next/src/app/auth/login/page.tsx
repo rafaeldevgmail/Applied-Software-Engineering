@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { UserLoginModal } from "@/components/features/users/user-login-modal";
 import { z } from "zod";
+import AlertCard from "@/components/ui/alertCard";
 
 interface PageProps {
   searchParams: Promise<{
@@ -29,32 +30,19 @@ const searchParamsSchema = z.object({
 });
 function RegistrationSuccessToast() {
   const searchParams = useSearchParams();
-
+  const registered = searchParams.get("registered");
+  const activated = searchParams.get("activated");
   useEffect(() => {
-    // 1. Toast para quando acaba de se registrar
-    if (searchParams.get("registered") === "true") {
-      toast.success(
-        "Cadastro realizado! Verifique seu e-mail para confirmação.",
-        {
-          duration: 10000,
-          icon: "✉️",
-          id: "email-confirmation-toast",
-        },
-      );
-      window.history.replaceState({}, "", "/auth/login");
-    }
-
-    // 2. Toast para quando a conta foi ativada com sucesso
-    if (searchParams.get("activated") === "true") {
+    // 1. Toast para quando a conta foi ativada com sucesso
+    if (activated === "true") {
       toast.success("Conta ativada com sucesso! Você já pode fazer login.", {
         duration: 10000,
-        icon: "✔",
         id: "account-activated-toast",
       });
       window.history.replaceState({}, "", "/auth/login");
     }
 
-    // 3. === VALIDAÇÃO E TOAST PARA ERROS DO NEXTAUTH ===
+    // 2. === VALIDAÇÃO E TOAST PARA ERROS DO NEXTAUTH ===
     // Valida o parâmetro da URL de forma segura com o Zod
     const parsed = searchParamsSchema.safeParse({
       error: searchParams.get("error") || undefined,
@@ -94,6 +82,17 @@ export default function LoginPage({ searchParams }: PageProps) {
   return (
     <div className="w-full max-w-5xl mx-auto p-6">
       <RegistrationSuccessToast />
+
+      {registered && (
+        <AlertCard
+          type="success"
+          theme="default"
+          title="Cadastro realizado com sucesso!"
+          Font="lg"
+        >
+          ✉️ Verifique seu e-mail para confirmação
+        </AlertCard>
+      )}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         {isModalOpen && <UserLoginModal />}
       </div>
