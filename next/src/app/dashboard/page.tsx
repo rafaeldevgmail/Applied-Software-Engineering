@@ -1,6 +1,6 @@
-import { getInitials } from "@/utils/utils";
 import { User } from "@/types/user";
 import Badge from "@/components/ui/badge";
+import { InitialsAvatar } from "@/components/ui/initialsAvatar";
 import { getUsers } from "@/services/userService";
 import { getClients } from "@/services/clientService";
 import Link from "next/link";
@@ -33,9 +33,7 @@ export default async function DashboardPage() {
                 className="flex items-center justify-between p-3 rounded-xl bg-white/2 border border-white/5 hover:bg-white/5 transition-all"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400 font-bold text-sm">
-                    {getInitials(user.name)}
-                  </div>
+                  <InitialsAvatar name={user.name} variant="user" />
                   <div>
                     <h4 className="text-sm font-semibold ">{user.name}</h4>
                     <p className="text-[10px] ">{user.email}</p>
@@ -92,9 +90,7 @@ export default async function DashboardPage() {
                 className="flex items-center justify-between p-3 rounded-xl bg-white/2 border border-white/5 hover:bg-white/5 transition-all"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400 font-bold text-sm">
-                    {getInitials(client.name)}
-                  </div>
+                  <InitialsAvatar name={client.name} variant="client" />
                   <div>
                     <h4 className="text-sm font-semibold ">{client.name}</h4>
                     <p className="text-[10px] ">{client.email}</p>

@@ -1,6 +1,7 @@
 import { getUsers } from "@/services/userService";
 import Link from "next/link";
-import { formatDate, getInitials } from "@/utils/utils";
+import { formatDate } from "@/utils/utils";
+import { InitialsAvatar } from "@/components/ui/initialsAvatar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlus,
@@ -99,9 +100,11 @@ export default async function UsersListPage({ searchParams }: PageProps) {
                   {/* Nome (com avatar) */}
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-violet-500 to-fuchsia-500 flex items-center justify-center text-white font-semibold text-xs shadow-inner">
-                        {getInitials(user.name)}
-                      </div>
+                      <InitialsAvatar
+                        name={user.name}
+                        variant="user"
+                        size="sm"
+                      />
                       <div>
                         <div className="font-medium">{user.name}</div>
                       </div>
