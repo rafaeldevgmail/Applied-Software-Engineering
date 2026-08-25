@@ -36,7 +36,7 @@ export default async function Dashboard({ children }: DashboardProps) {
                   </Badge>
 
                   {/* Título Principal */}
-                  <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
+                  <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-700 dark:text-white/80 tracking-tight leading-tight">
                     Gerencie suas atividades com <br />
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-emerald-400">
                       simplicidade e controle
