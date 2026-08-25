@@ -5,6 +5,7 @@ import { Prisma, Client } from "@prisma/client";
 // 1. Definição centralizada dos campos públicos que o banco deve retornar
 export const clientSelect = Prisma.validator<Prisma.ClientSelect>()({
   id: true,
+  userId: true,
   name: true,
   email: true,
   phone: true,
