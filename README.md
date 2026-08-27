@@ -1,3 +1,5 @@
+
+
 # 🧪 Applied Software Engineering Practices
 
 ## FullStack App
@@ -15,13 +17,24 @@
 Frontend dashboard built with **Next.js 16 (App Router)** as a showcase project for **software engineering best practices** on the client side. The application features a custom glassmorphism design system, URL-driven modal architecture, form validation with Zod + react-hook-form, Server Components for data fetching, and full integration with the [Backend Node.js API](https://github.com/rafaeldevgmail/Applied-Software-Engineering).
 
 ## Preview
+<div align="center">
+    
+https://github.com/user-attachments/assets/0adbb569-9290-44cd-95b0-22ba62a8f370
 
+https://github.com/user-attachments/assets/81948d76-7478-4aac-b013-612f024f3d23
 
-https://github.com/user-attachments/assets/1596fb35-bd48-4101-ab1f-0222689569a8
+https://github.com/user-attachments/assets/1595bb89-9e85-48af-9f38-b945076da257
 
+<img width="300" alt="Home Mobile" src="https://github.com/user-attachments/assets/0864473f-4299-4256-85fa-479d151a7c07" />
+<img width="300" alt="Login Mobile" src="https://github.com/user-attachments/assets/36b25e64-3721-4f6e-8a26-f4c0827ff3cd" />
+<img width="300" alt="Dashboard Mobile" src="https://github.com/user-attachments/assets/9a363d20-bd06-410a-919f-fbd6a6204359" />
+<img width="900" alt="Client New" src="https://github.com/user-attachments/assets/7c2adb3f-468d-441a-aad3-8df5b42e08f8" />
+<img width="900" alt="Client Edit" src="https://github.com/user-attachments/assets/eb55785a-6075-429a-81e4-a0212b43f5bd" />
+<img width="1920" alt="Client View" src="https://github.com/user-attachments/assets/77117676-0f74-4a81-983a-7ad28ca2dfaa" />
+<img width="1920" alt="Client Delete" src="https://github.com/user-attachments/assets/7273b16f-6e8d-46d6-b10f-3cd8bb818cd3" />
+<img width="1920" alt="Edit Client light" src="https://github.com/user-attachments/assets/89787eb3-fc21-45a3-8a49-732e8a4be77f" />
 
-https://github.com/user-attachments/assets/04b01f5c-d4b6-43e2-8fcf-0a4091f08180
-
+</div>
 ---
 
 ## Stack
