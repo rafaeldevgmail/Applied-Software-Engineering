@@ -17,7 +17,7 @@ export function ThemeToggle({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "group inline-flex items-center rounded-2xl border border-zinc-200 dark:border-zinc-700 bg-zinc-100/80 dark:bg-zinc-800/80 p-1 gap-0 glass-pill transition-all duration-300 ease-in-out",
+        "hidden md:flex group md:inline-flex items-center rounded-2xl border border-zinc-200 dark:border-zinc-700 bg-zinc-100/80 dark:bg-zinc-800/80 p-1 gap-0 glass-pill transition-all duration-300 ease-in-out",
         className,
       )}
       role="group"

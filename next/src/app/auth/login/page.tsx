@@ -80,7 +80,7 @@ export default function LoginPage({ searchParams }: PageProps) {
   const isModalOpen = registered !== "true";
 
   return (
-    <div className="w-full max-w-5xl mx-auto p-6">
+    <div className="w-full max-w-5xl mx-auto sm:p-0 md:p-6">
       <RegistrationSuccessToast />
 
       {registered && (

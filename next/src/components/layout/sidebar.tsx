@@ -6,7 +6,6 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 config.autoAddCss = false;
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { signOut } from "next-auth/react";
 import {
   faChartPie,
   faFolder,
@@ -16,7 +15,7 @@ import {
   faRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
 
-const NAV_ITEMS = [
+export const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: faChartPie },
   { href: "/dashboard/users", label: "Usuários", icon: faFolder },
   { href: "/dashboard/clients", label: "Clientes", icon: faWallet },
@@ -26,7 +25,7 @@ export default function Sidebar({ session }: { session?: any }) {
   const pathname = usePathname();
 
   return (
-    <aside className="lg:col-span-2 glass-sidebar flex flex-col justify-between p-4 min-h-full rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl">
+    <aside className="hidden lg:flex lg:col-span-2 lg:glass-sidebar flex-col justify-between p-4 min-h-full rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl">
       {/* Topo: Logo + Links */}
       <div className="space-y-6">
         {/* Header / Logo */}
@@ -118,7 +117,7 @@ export default function Sidebar({ session }: { session?: any }) {
             onClick={() => signOut()}
             title="Sair"
           >
-            <FontAwesomeIcon icon={faRightFromBracket} className="text-xs" />
+            <FontAwesomeIcon icon={faRightFromBracket} className="text-md" />
           </button>
         </div>
       </div>
