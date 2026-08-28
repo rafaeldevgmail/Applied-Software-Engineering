@@ -25,14 +25,50 @@ https://github.com/user-attachments/assets/81948d76-7478-4aac-b013-612f024f3d23
 
 https://github.com/user-attachments/assets/1595bb89-9e85-48af-9f38-b945076da257
 
-<img width="300" alt="Home Mobile" src="https://github.com/user-attachments/assets/0864473f-4299-4256-85fa-479d151a7c07" />
-<img width="300" alt="Login Mobile" src="https://github.com/user-attachments/assets/36b25e64-3721-4f6e-8a26-f4c0827ff3cd" />
-<img width="300" alt="Dashboard Mobile" src="https://github.com/user-attachments/assets/9a363d20-bd06-410a-919f-fbd6a6204359" />
-<img width="900" alt="Client New" src="https://github.com/user-attachments/assets/7c2adb3f-468d-441a-aad3-8df5b42e08f8" />
-<img width="900" alt="Client Edit" src="https://github.com/user-attachments/assets/eb55785a-6075-429a-81e4-a0212b43f5bd" />
-<img width="1920" alt="Client View" src="https://github.com/user-attachments/assets/77117676-0f74-4a81-983a-7ad28ca2dfaa" />
-<img width="1920" alt="Client Delete" src="https://github.com/user-attachments/assets/7273b16f-6e8d-46d6-b10f-3cd8bb818cd3" />
-<img width="1920" alt="Edit Client light" src="https://github.com/user-attachments/assets/89787eb3-fc21-45a3-8a49-732e8a4be77f" />
+<table>
+    <tr>
+    <td align="center">
+      <b>Home Mobile</b><br>
+      <img width="330" alt="Home Mobile" src="https://github.com/user-attachments/assets/0864473f-4299-4256-85fa-479d151a7c07" />
+    </td>
+    <td align="center">
+      <b>Login Mobile</b><br>
+      <img width="330" alt="Login Mobile" src="https://github.com/user-attachments/assets/36b25e64-3721-4f6e-8a26-f4c0827ff3cd" />
+    </td>
+    <td align="center">
+      <b>Dashboard Mobile</b><br>
+      <img width="330" alt="Dashboard Mobile" src="https://github.com/user-attachments/assets/9a363d20-bd06-410a-919f-fbd6a6204359" />
+    </td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td align="center">
+      <b>Client New</b><br>
+      <img width="500" alt="Client New" src="https://github.com/user-attachments/assets/7c2adb3f-468d-441a-aad3-8df5b42e08f8" />
+    </td>
+    <td align="center">
+      <b>Client Edit</b><br>
+      <img width="500" alt="Client Edit" src="https://github.com/user-attachments/assets/eb55785a-6075-429a-81e4-a0212b43f5bd" />
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <b>Client View</b><br>
+      <img width="500" alt="Client View" src="https://github.com/user-attachments/assets/77117676-0f74-4a81-983a-7ad28ca2dfaa" />
+    </td>
+    <td align="center">
+      <b>Client Delete</b><br>
+      <img width="500" alt="Client Delete" src="https://github.com/user-attachments/assets/7273b16f-6e8d-46d6-b10f-3cd8bb818cd3" />
+    </td>
+      </tr>
+  <tr>
+  <td align="center">
+      <b>Client Edit - Light Theme</b><br>
+      <img width="500" alt="Edit Client light" src="https://github.com/user-attachments/assets/89787eb3-fc21-45a3-8a49-732e8a4be77f" />
+    </td>
+  </tr>
+</table>
 
 </div>
 ---
