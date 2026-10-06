@@ -25,6 +25,6 @@ services:
 
 networks:
   app-network:
-    #river: bridge # rede interna (no mesmo docker-compose.yml)
+    # driver: bridge # rede interna (no mesmo docker-compose.yml)
     external: true # create the network before: docker network create app-network
 

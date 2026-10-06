@@ -24,18 +24,29 @@ async function main() {
 
   console.log("Gerando mockups de Usuários, Clientes e Tarefas...");
   for (let i = 0; i < 10; i++) {
+    const userFirstName = faker.person.firstName();
+    const userLastName = faker.person.lastName();
     const user = await prisma.user.create({
       data: {
-        name: faker.person.fullName(),
-        email: faker.internet.email(),
+        name: `${userFirstName} ${userLastName}`,
+        email: faker.internet.email({
+          firstName: userFirstName,
+          lastName: userLastName,
+        }),
         password: defaultPassword,
+        emailVerifiedAt: faker.helpers.arrayElement([faker.date.past(), null]), // 50% de chance de ser verificado
       },
     });
+    const clientFirstName = faker.person.firstName();
+    const clientLastName = faker.person.lastName();
     const client = await prisma.client.create({
       data: {
         userId: mainUser.id,
-        name: faker.person.fullName(),
-        email: faker.internet.email(),
+        name: `${clientFirstName} ${clientLastName}`,
+        email: faker.internet.email({
+          firstName: clientFirstName,
+          lastName: clientLastName,
+        }),
         phone: faker.phone.number(),
         company: faker.company.name(),
         status: faker.helpers.arrayElement(["active", "inactive", "prospect"]),
