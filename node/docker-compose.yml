@@ -18,6 +18,8 @@ services:
       - REDIS_URL=redis://${REDIS_HOST}:${REDIS_PORT}
       - NODE_ENV=development
       - PORT=3000
+      - DATABASE_PROVIDER=${DATABASE_PROVIDER}
+      - MONGO_URI=${MONGO_URI}
       - DB_HOST=db
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
