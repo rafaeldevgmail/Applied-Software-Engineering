@@ -10,7 +10,7 @@
 
 #### 2. Backend application technologies: Node.js
 
-![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?logo=node.js&logoColor=white) ![Express](https://img.shields.io/badge/Express-5.x-000000?logo=express&logoColor=white) ![Prisma](https://img.shields.io/badge/Prisma-7.x-2D3748?logo=prisma&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?logo=postgresql&logoColor=white) ![Redis](https://img.shields.io/badge/Redis-7-DC382D?logo=redis&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white) ![Vitest](https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white) ![License](https://img.shields.io/badge/license-ISC-blue)
+![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?logo=node.js&logoColor=white) ![Express](https://img.shields.io/badge/Express-5.x-000000?logo=express&logoColor=white) ![Prisma](https://img.shields.io/badge/Prisma-7.x-2D3748?logo=prisma&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?logo=postgresql&logoColor=white) ![MongoDB](https://img.shields.io/badge/MongoDB-9.0-47A248?logo=mongodb&logoColor=white) ![Redis](https://img.shields.io/badge/Redis-7-DC382D?logo=redis&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white) ![Vitest](https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white) ![License](https://img.shields.io/badge/license-ISC-blue)
 
 ## 1. Frontend application: Next.js
 
@@ -283,7 +283,7 @@ npm run dev
 ## Frontend Project Structure
 
 ```
-📁 root/
+📁 next/
 ├── ⚙️ .env                          # Environment variables (backend URLs)
 ├── 🔒 .gitignore                    # Git exclusion rules
 ├── 🐳 .dockerignore                 # Docker build exclusions
@@ -360,29 +360,31 @@ npm run dev
 
 ## 2. Backend application: Node.js
 
-A REST API built with Node.js as a showcase project for **software engineering best practices**. The codebase follows a modular monolith architecture with a layered design (Routes → Controllers → Use Cases → Repository), employing established design patterns such as Dependency Injection and SOLID principles. Features include asynchronous queue processing with BullMQ and Redis, a relational database integrated via Prisma ORM, and a fully containerized environment using Docker Compose.
+A REST API built with Node.js as a showcase project for **software engineering best practices**. The codebase follows a modular monolith architecture with a layered design (Routes → Controllers → Use Cases → Repository), employing established design patterns such as Dependency Injection and SOLID principles. Features include asynchronous queue processing with BullMQ and Redis, a **dual-database strategy** (PostgreSQL via Prisma ORM or MongoDB via Mongoose), a complete email verification and password recovery flow with Nodemailer, and a fully containerized environment using Docker Compose.
 
 ---
 
 ## Stack
 
-| Category           | Technologies                                                      |
-| ------------------ | ----------------------------------------------------------------- |
-| **Runtime & Web**  | Node.js 20 (Alpine), Express 5, TypeScript 6                      |
-| **Database & ORM** | PostgreSQL 15, Prisma 7 (adapter-pg, driver adapters, migrations) |
-| **Queue & Cache**  | Redis 7, BullMQ 5, ioredis, Bull Board (dashboard)                |
-| **DevOps**         | Docker, Docker Compose                                            |
-| **Testing**        | Vitest 4, @faker-js/faker                                         |
-| **Security**       | JWT (jsonwebtoken), bcrypt, CORS                                  |
-| **Email**          | Nodemailer (Ethereal SMTP)                                        |
+| Category           | Technologies                                                          |
+| ------------------ | --------------------------------------------------------------------- |
+| **Runtime & Web**  | Node.js 20 (Alpine), Express 5, TypeScript 6                          |
+| **Database & ORM** | PostgreSQL 15, Prisma 7 (adapter-pg, driver adapters, migrations)     |
+| **NoSQL**          | MongoDB, Mongoose 9 (via `DATABASE_PROVIDER=mongo`)                   |
+| **Queue & Cache**  | Redis 7, BullMQ 5, ioredis, Bull Board (dashboard)                    |
+| **DevOps**         | Docker, Docker Compose                                                |
+| **Testing**        | Vitest 4, @faker-js/faker                                             |
+| **Security**       | JWT (jsonwebtoken), bcrypt, CORS                                      |
+| **Email**          | Nodemailer (Ethereal SMTP)                                            |
 
 ---
 
 ## 🏗️ Architecture & Best Practices
 
 - **Modular Monolith**: Code organized by domain modules (`auth`, `users`, `clients`, `reports`) inside `src/modules/`, with shared infrastructure in `src/shared/`.
-- **Repository Pattern + DI**: `UserController` and `AuthController` receive `IUserRepository` via constructor injection. By using factories (`src/factories/`) to wire the concrete Prisma implementation, the controllers remain fully decoupled from the database layer (Dependency Inversion). This architecture enables a seamless transition from PostgreSQL to any other database adapter simply by swapping the injected implementation.
-- **Use Case Layer**: Business logic encapsulated in dedicated Use Cases (`LoginUseCase`, `RegisterStartUseCase`, `RegisterCompleteUseCase`) following the Single Responsibility Principle.
+- **Dual Database Strategy**: The `DATABASE_PROVIDER` env var selects the repository implementation. `postgres` (default) uses **Prisma + `@prisma/adapter-pg`**; `mongo` uses **Mongoose** with auto-increment IDs — same interfaces, same controllers.
+- **Repository Pattern + DI**: `UserController`, `AuthController` and `ClientController` receive `IUserRepository`/`IClientRepository` via constructor injection. Factories (`src/factories/`) wire the concrete Prisma or Mongo implementation, keeping controllers fully decoupled from the database layer (Dependency Inversion).
+- **Use Case Layer**: Business logic encapsulated in dedicated Use Cases (`LoginUseCase`, `RegisterStartUseCase`, `RegisterCompleteUseCase`, `ResendRegisterTokenUseCase`, `ForgotPasswordUseCase`, `ResetPasswordUseCase`) following the Single Responsibility Principle.
 - **API / Worker Separation**: The report worker runs in an independent Node process (`npm run start:workers`), consuming jobs from the Redis queue while the API remains responsive.
 - **Bull Board Dashboard**: Real-time queue monitoring at `/admin/queues` via Bull Board.
 - **Prisma with Driver Adapters**: Native PostgreSQL connection pool (`pg`) adapted to Prisma via `@prisma/adapter-pg`, ensuring performance and typed migrations.
@@ -395,9 +397,9 @@ The schema includes the following relational entities:
 
 | Entity      | Table      | Description                   | Key Fields                                                                                                                                 |
 | ----------- | ---------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| **User**    | `users`    | System user (JWT auth)        | `id`, `name`, `email` (unique), `password`, `emailVerifiedAt`                                                                              |
-| **Client**  | `clients`  | Client registered by user     | `id`, `userId`, `name`, `email` (unique), `phone`, `company`, `status` (active/inactive/prospect), soft delete                             |
-| **Task**    | `tasks`    | Task associated with a client | `id`, `userId`, `clientId?`, `title`, `status` (todo/in_progress/review/done), `priority` (low/medium/high/urgent), `dueDate`, soft delete |
+| **User**    | `users`    | System user (JWT auth)        | `id`, `name?`, `email` (unique), `password?`, `emailVerifiedAt`, `oauth`, `rememberToken`                                                  |
+| **Client**  | `clients`  | Client registered by user     | `id`, `userId`, `name`, `email` (unique), `phone`, `company`, `status` (active/inactive/prospect), `notes`, soft delete                    |
+| **Task**    | `tasks`    | Task associated with a client | `id`, `userId`, `clientId?`, `title`, `description?`, `status` (todo/in_progress/review/done), `priority` (low/medium/high/urgent), `dueDate`, soft delete |
 | **Session** | `sessions` | User session (infrastructure) | `id`, `userId?`, `ipAddress`, `userAgent`, `payload`, `lastActivity`                                                                       |
 
 **Relations:**
@@ -411,49 +413,56 @@ The schema includes the following relational entities:
 ## Features
 
 - **Two-Step Registration**: Email verification flow — `POST /auth/register` sends a JWT confirmation link via email; `POST /auth/register-complete` activates the account.
+- **Resend Registration Token**: `POST /auth/resend-register-token` re-sends the verification email for unverified accounts (doesn't reveal whether the email exists).
 - **Login with Email Verification**: Only verified accounts (`emailVerifiedAt`) can log in. Password comparison via bcrypt.
-- **User CRUD**: List (paginated with `skip`/`take`), find by ID, update, delete — all via Repository Pattern with automatic password stripping.
-- **Client & Task Modeling**: Full relational model with soft delete support, status enums, and priority levels.
-- **Async Reports**: Background data generation — the API enqueues a job in BullMQ (202 Accepted), and the worker processes it independently (updates task status: `todo → in_progress → done`).
-- **Bull Board Dashboard**: Admin UI at `/admin/queues` for real-time monitoring of queued jobs (Basic Auth credentials configured via env vars).
-- **Automated Seed**: Realistic mock data with @faker-js/faker.
+- **Forgot / Reset Password**: `POST /auth/forgot-password` sends a scoped JWT reset link (`purpose: "password_reset"`); `POST /auth/reset-password` validates the token and updates the password.
+- **User CRUD**: List (paginated with `page`/`limit`), find by ID, find by email (`GET /users/email/:email`), update, delete — all via Repository Pattern with automatic password stripping.
+- **Client CRUD**: Full CRUD with pagination and email lookup, via `IClientRepository`.
+- **Dual Database Support**: Same interfaces, two implementations — PostgreSQL/Prisma and MongoDB/Mongoose — switchable via `DATABASE_PROVIDER`.
+- **Task Modeling & Async Reports**: Background data generation — the API enqueues a job in BullMQ (202 Accepted), and the worker processes it independently (updates task status: `todo → in_progress → done`).
+- **Bull Board Dashboard**: Admin UI at `/admin/queues` for real-time monitoring of the `relatorios-queue`.
+- **Automated Seed**: Realistic mock data with @faker-js/faker (`npm run db:seed`).
 - **Global Error Handling**: Centralized middleware handling Prisma errors, `AppError` instances, and unexpected errors with proper HTTP status codes.
 
 ---
 
 ## API Routes
 
-| Method   | Path                      | Description                                               | Auth       |
-| -------- | ------------------------- | --------------------------------------------------------- | ---------- |
-| `GET`    | `/`                       | Health check                                              | No         |
-| `POST`   | `/auth/register`          | Start registration (sends verification email)             | No         |
-| `POST`   | `/auth/register-complete` | Complete registration with token                          | No         |
-| `POST`   | `/auth/login`             | Login (requires verified email)                           | No         |
-| `GET`    | `/users/`                 | List users (supports `skip`, `take`, `role` query params) | No         |
-| `GET`    | `/users/:id`              | Get user by ID                                            | No         |
-| `PUT`    | `/users/:id`              | Update user                                               | No         |
-| `DELETE` | `/users/:id`              | Delete user                                               | No         |
-| `GET`    | `/clients/`               | List clients                                              | No         |
-| `GET`    | `/clients/:id`            | Get client by ID                                          | No         |
-| `POST`   | `/clients`                | Create client                                             | No         |
-| `PUT`    | `/clients/:id`            | Update client                                             | No         |
-| `DELETE` | `/clients/:id`            | Delete client                                             | No         |
-| `POST`   | `/api/relatorio`          | Trigger async report generation                           | No         |
-| `GET`    | `/admin/queues/*`         | Bull Board dashboard                                      | No         |
+| Method   | Path                           | Description                                                            | Auth       |
+| -------- | ------------------------------ | ---------------------------------------------------------------------- | ---------- |
+| `GET`    | `/`                            | Health check                                                           | No         |
+| `POST`   | `/auth/register`               | Start registration (sends verification email)                          | No         |
+| `POST`   | `/auth/register-complete`      | Complete registration with token                                       | No         |
+| `POST`   | `/auth/resend-register-token`  | Re-send the registration verification email                            | No         |
+| `POST`   | `/auth/login`                  | Login (requires verified email)                                        | No         |
+| `POST`   | `/auth/forgot-password`        | Request a password reset link by email                                 | No         |
+| `POST`   | `/auth/reset-password`         | Reset password using the token from the email                          | No         |
+| `GET`    | `/users/`                      | List users (supports `page`, `limit`, `role` query params)             | No         |
+| `GET`    | `/users/:id`                   | Get user by ID                                                         | No         |
+| `GET`    | `/users/email/:email`          | Get user by email (case-insensitive)                                   | No         |
+| `PUT`    | `/users/:id`                   | Update user                                                            | No         |
+| `DELETE` | `/users/:id`                   | Delete user                                                            | No         |
+| `GET`    | `/clients/`                    | List clients (supports `page`, `limit` query params)                   | No         |
+| `GET`    | `/clients/:id`                 | Get client by ID                                                       | No         |
+| `POST`   | `/clients`                     | Create client                                                          | No         |
+| `PUT`    | `/clients/:id`                 | Update client                                                          | No         |
+| `DELETE` | `/clients/:id`                 | Delete client                                                          | No         |
+| `POST`   | `/api/relatorio`               | Trigger async report generation (202 Accepted + `taskId`)              | No         |
+| `GET`    | `/admin/queues/*`              | Bull Board dashboard                                                   | No         |
 
 ---
 
 ## Design Patterns & Principles
 
-| Pattern                   | Where                                                                        | Benefit                                                                     |
-| ------------------------- | ---------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| **Repository**            | `IUserRepository` → `PrismaUserRepository`, `IClientRepository` → `PrismaClientRepository` | Isolates data access logic; swap ORM/database without impacting controllers |
-| **Dependency Injection**  | `user-factory.ts`, `client-factory.ts` wire repositories into controllers    | Facilitates testing with in-memory mocks; adheres to SOLID DIP              |
-| **Use Case**              | `LoginUseCase`, `RegisterStartUseCase`, `RegisterCompleteUseCase`            | Encapsulates business logic; each class handles one operation               |
-| **Single Responsibility** | Controllers handle HTTP, Use Cases handle business, Repositories handle data | Cohesive and independently testable code                                    |
-| **Modular Organization**  | `src/modules/{auth,users,clients,reports}/`                                  | Domain-driven structure; each module owns its routes, controllers, services |
-| **Background Worker**     | ReportService → BullMQ Queue → ReportWorker                                  | Heavy processing doesn't block the API response                             |
-| **Error Objects**         | `AppError` (custom class) + `PrismaErrorHandler` (static formatter)          | Semantic and centralized error handling with proper HTTP status mapping     |
+| Pattern                   | Where                                                                                                    | Benefit                                                                     |
+| ------------------------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| **Repository**            | `IUserRepository` → `PrismaUserRepository`/`MongoUserRepository`; `IClientRepository` → `PrismaClientRepository`/`MongoClientRepository` | Isolates data access logic; swap ORM/database without impacting controllers |
+| **Dependency Injection**  | `user-factory.ts`, `client-factory.ts` wire repositories into controllers (chosen by `DATABASE_PROVIDER`) | Facilitates testing with in-memory mocks; adheres to SOLID DIP              |
+| **Use Case**              | `LoginUseCase`, `RegisterStartUseCase`, `RegisterCompleteUseCase`, `ResendRegisterTokenUseCase`, `ForgotPasswordUseCase`, `ResetPasswordUseCase` | Encapsulates business logic; each class handles one operation               |
+| **Single Responsibility** | Controllers handle HTTP, Use Cases handle business, Repositories handle data                             | Cohesive and independently testable code                                    |
+| **Modular Organization**  | `src/modules/{auth,users,clients,reports}/`                                                              | Domain-driven structure; each module owns its routes, controllers, services |
+| **Background Worker**     | ReportService → BullMQ Queue → ReportWorker                                                              | Heavy processing doesn't block the API response                             |
+| **Error Objects**         | `AppError` (custom class) + `PrismaErrorHandler` (static formatter)                                      | Semantic and centralized error handling with proper HTTP status mapping     |
 
 ---
 
@@ -535,7 +544,7 @@ docker network create app-network
 # 4. Start the containers
 docker-compose up -d --build
 
-# 5. Run migrations
+# 5. Run migrations (only for DATABASE_PROVIDER=postgres)
 docker exec -it node npx prisma migrate dev
 
 # 6. Seed the database
@@ -550,12 +559,17 @@ The API will be available at `http://localhost:3000`.
 PORT=3000
 NODE_ENV=development
 
-# PostgreSQL
+# PostgreSQL (padrão)
+DATABASE_PROVIDER=postgres
 DB_HOST=db
 DB_USER=USER
 DB_PASS=PASS
 DB_NAME=DATABASENAME
 DATABASE_URL="postgresql://USER:PASS@db:5432/DATABASENAME?schema=public"
+
+# MongoDB (alternativa — troque DATABASE_PROVIDER para "mongo")
+# DATABASE_PROVIDER=mongo
+# MONGO_URI="mongodb://USER:PASS@mongodb:27017/DATABASENAME?authSource=admin"
 
 # Redis
 REDIS_HOST=redis
@@ -582,16 +596,16 @@ SMTP_PASS=PASS
 
 ## Scripts
 
-| Command                 | Description                                |
-| ----------------------- | ------------------------------------------ |
-| `npm run dev`           | Start API in development mode (tsx)        |
-| `npm run debug`         | Start API with remote debugger (port 9229) |
-| `npm run dev:watch`     | Start API with file watching               |
-| `npm start`             | Start API in production-like mode          |
-| `npm run start:workers` | Start the background report worker         |
-| `npm test`              | Generate Prisma client and run Vitest      |
-| `npm run test:watch`    | Run standalone queue test script           |
-| `npm run db:seed`       | Generate Prisma client and seed database   |
+| Command                 | Description                                                          |
+| ----------------------- | -------------------------------------------------------------------- |
+| `npm run dev`           | Start API in development mode (tsx)                                  |
+| `npm run debug`         | Start API with remote debugger (port 9229)                           |
+| `npm run dev:watch`     | Start API with file watching                                         |
+| `npm start`             | Start API in production-like mode                                    |
+| `npm run start:workers` | Start the background report worker                                   |
+| `npm test`              | Generate Prisma client and run Vitest                                |
+| `npm run test:watch`    | Generate Prisma client and run the manual queue integration test     |
+| `npm run db:seed`       | Generate Prisma client and seed database                             |
 
 ---
 
@@ -613,7 +627,7 @@ npm test
 ## Backend Project Structure
 
 ```
-📁 root/
+📁 node/
 ├── ⚙️ .env                          # Environment variables
 ├── 🔒 .gitignore                    # Git exclusion rules
 ├── 🐳 .dockerignore                 # Docker build exclusions
@@ -631,13 +645,15 @@ npm test
     │   ├── ⚙️ env.ts                    # Env var validation & export
     │   └── 🔗 redisConfig.ts            # Redis connection config
     ├── 📂 factories/
-    │   ├── 🔧 user-factory.ts           # DI factory: wires PrismaUserRepository into controllers
-    │   └── 🔧 client-factory.ts         # DI factory: wires PrismaClientRepository into controllers
+    │   ├── 🔧 user-factory.ts           # DI factory: Prisma|Mongo User repo → controllers
+    │   └── 🔧 client-factory.ts         # DI factory: Prisma|Mongo Client repo → controllers
     ├── 📂 lib/
+    │   ├── 📧 mailer.ts                 # Nodemailer transporter + Mailer class
+    │   ├── 🍃 mongo.ts                  # Mongoose connection + Counter (auto-increment IDs)
     │   └── 🗄️ prisma.ts                 # PrismaClient singleton (driver adapter pattern)
     ├── 📂 modules/
     │   ├── 📂 auth/
-    │   │   ├── 🔑 auth.controller.ts    # Login & registration handlers
+    │   │   ├── 🔑 auth.controller.ts    # Login, register & password recovery handlers
     │   │   └── 🔑 auth.routes.ts        # POST /login, /register, /register-complete
     │   ├── 📂 reports/
     │   │   ├── 📋 report.controller.ts  # Triggers async report generation
@@ -649,21 +665,29 @@ npm test
     │   │   ├── 📂 repository/
     │   │   │   ├── 💎 prisma/
     │   │   │   │   └── 💾 client.prisma.repository.ts  # Concrete Prisma implementation
+    │   │   │   ├── 🍃 mongo/
+    │   │   │   │   ├── 📄 client.mongo.model.ts        # Mongoose Client schema
+    │   │   │   │   └── 💾 client.mongo.repository.ts   # Concrete MongoDB implementation
     │   │   │   └── 📄 client.repository.interface.ts   # IClientRepository interface
-    │   │   ├── 📂 useCases/
     │   │   ├── 👤 client.controller.ts   # Client CRUD
-    │   │   └── 👤 client.routes.ts       # CRUD routes
+    │   │   └── 👤 client.routes.ts       # GET/POST/PUT/DELETE /clients
     │   └── 📂 users/
     │       ├── 📂 repository/
     │       │   ├── 💎 prisma/
-    │       │   │   └── 💾 user.prisma.repository.ts    # Concrete Prisma implementation
-    │       │   └── 📄 user.repository.interface.ts     # IUserRepository interface
+    │       │   │   └── 💾 user.prisma.repository.ts     # Concrete Prisma implementation
+    │       │   ├── 🍃 mongo/
+    │       │   │   ├── 📄 user.mongo.model.ts           # Mongoose User schema
+    │       │   │   └── 💾 user.mongo.repository.ts      # Concrete MongoDB implementation
+    │       │   └── 📄 user.repository.interface.ts      # IUserRepository interface
     │       ├── 📂 useCases/
     │       │   ├── 🔑 LoginUseCase.ts              # Email verification + bcrypt comparison
+    │       │   ├── 🔑 RegisterStartUseCase.ts      # Email validation, hashing, nodemailer
     │       │   ├── 🔑 RegisterCompleteUseCase.ts   # JWT token verification + account activation
-    │       │   └── 🔑 RegisterStartUseCase.ts      # Email validation, hashing, nodemailer
+    │       │   ├── 🔑 ResendRegisterTokenUseCase.ts # Re-sends verification email for unverified accounts
+    │       │   ├── 🔑 ForgotPasswordUseCase.ts     # Sends password reset link by email
+    │       │   └── 🔑 ResetPasswordUseCase.ts      # Validates token purpose + updates password
     │       ├── 👤 user.controller.ts     # User CRUD (with injected repository)
-    │       └── 👤 user.routes.ts         # GET/PUT/DELETE /users, /users/:id
+    │       └── 👤 user.routes.ts         # GET/PUT/DELETE /users, /users/:id, /users/email/:email
     ├── 💎 prisma/
     │   ├── 📊 schema.prisma              # User/Client/Task/Session
     │   ├── 🌱 seed.ts                    # Database seeder with faker
@@ -677,7 +701,7 @@ npm test
     │   │   │   ├── ⚙️ app.ts             # Express config (CORS, routes, error handler)
     │   │   │   └── 🚀 server.ts          # Entry point (server initialization)
     │   │   └── 🏃 workers/
-    │   │       └── 🚀 index.ts                       # Worker entry point (imports report.worker.ts)
+    │   │       └── 🚀 index.ts           # Worker entry point (imports report.worker.ts)
     │   └── 📂 middlewares/
     │       ├── 🪪 authMiddleware.ts       # JWT token verification middleware
     │       └── 🚨 errorMiddleware.ts      # Global Express error handler
