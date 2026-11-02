@@ -7,6 +7,8 @@ import clientsRouter from "@/modules/clients/client.routes.ts";
 //BullMQ Board
 import { serverAdapter } from "@/config/bullBoard.ts";
 import { errorMiddleware } from "@/shared/middlewares/errorMiddleware.ts";
+// GraphQL
+import { graphqlHttpHandler } from "@/shared/infra/graphql/graphqlHttp.ts";
 
 // CAPTURA DE ERROS GLOBAIS
 process.on("uncaughtException", (error: Error) => {
@@ -45,6 +47,7 @@ app.use("/auth", authRouter);
 app.use("/users", usersRouter);
 app.use("/clients", clientsRouter);
 app.use("/api", reportRoutes);
+app.post("/graphql", graphqlHttpHandler);
 
 //Middleware de erro do express
 app.use(errorMiddleware);
