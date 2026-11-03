@@ -10,7 +10,7 @@
 
 #### 2. Backend application technologies: Node.js
 
-![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?logo=node.js&logoColor=white) ![Express](https://img.shields.io/badge/Express-5.x-000000?logo=express&logoColor=white) ![Prisma](https://img.shields.io/badge/Prisma-7.x-2D3748?logo=prisma&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?logo=postgresql&logoColor=white) ![MongoDB](https://img.shields.io/badge/MongoDB-9.0-47A248?logo=mongodb&logoColor=white) ![Redis](https://img.shields.io/badge/Redis-7-DC382D?logo=redis&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white) ![Vitest](https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white) ![License](https://img.shields.io/badge/license-ISC-blue)
+![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?logo=node.js&logoColor=white) ![Express](https://img.shields.io/badge/Express-5.x-000000?logo=express&logoColor=white) ![GraphQL](https://img.shields.io/badge/GraphQL-16-E10098?logo=graphql&logoColor=white) ![Prisma](https://img.shields.io/badge/Prisma-7.x-2D3748?logo=prisma&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?logo=postgresql&logoColor=white) ![MongoDB](https://img.shields.io/badge/MongoDB-9.0-47A248?logo=mongodb&logoColor=white) ![Redis](https://img.shields.io/badge/Redis-7-DC382D?logo=redis&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white) ![Vitest](https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white) ![License](https://img.shields.io/badge/license-ISC-blue)
 
 ## 1. Frontend application: Next.js
 
@@ -360,7 +360,7 @@ npm run dev
 
 ## 2. Backend application: Node.js
 
-A REST API built with Node.js as a showcase project for **software engineering best practices**. The codebase follows a modular monolith architecture with a layered design (Routes → Controllers → Use Cases → Repository), employing established design patterns such as Dependency Injection and SOLID principles. Features include asynchronous queue processing with BullMQ and Redis, a **dual-database strategy** (PostgreSQL via Prisma ORM or MongoDB via Mongoose), a complete email verification and password recovery flow with Nodemailer, and a fully containerized environment using Docker Compose.
+A REST API built with Node.js as a showcase project for **software engineering best practices**. The codebase follows a modular monolith architecture with a layered design (Routes → Controllers → Use Cases → Repository), employing established design patterns such as Dependency Injection and SOLID principles. Features include asynchronous queue processing with BullMQ and Redis, a **dual-database strategy** (PostgreSQL via Prisma ORM or MongoDB via Mongoose), a **GraphQL CRUD layer** switchable against the REST repositories via environment variables (`CRUD_MODE`), a complete email verification and password recovery flow with Nodemailer, and a fully containerized environment using Docker Compose.
 
 ---
 
@@ -372,6 +372,7 @@ A REST API built with Node.js as a showcase project for **software engineering b
 | **Database & ORM** | PostgreSQL 15, Prisma 7 (adapter-pg, driver adapters, migrations)     |
 | **NoSQL**          | MongoDB, Mongoose 9 (via `DATABASE_PROVIDER=mongo`)                   |
 | **Queue & Cache**  | Redis 7, BullMQ 5, ioredis, Bull Board (dashboard)                    |
+| **GraphQL API**    | GraphQL 16 (schema SDL, resolvers, custom executor)                   |
 | **DevOps**         | Docker, Docker Compose                                                |
 | **Testing**        | Vitest 4, @faker-js/faker                                             |
 | **Security**       | JWT (jsonwebtoken), bcrypt, CORS                                      |
@@ -383,6 +384,7 @@ A REST API built with Node.js as a showcase project for **software engineering b
 
 - **Modular Monolith**: Code organized by domain modules (`auth`, `users`, `clients`, `reports`) inside `src/modules/`, with shared infrastructure in `src/shared/`.
 - **Dual Database Strategy**: The `DATABASE_PROVIDER` env var selects the repository implementation. `postgres` (default) uses **Prisma + `@prisma/adapter-pg`**; `mongo` uses **Mongoose** with auto-increment IDs — same interfaces, same controllers.
+- **Multi-Provider CRUD Strategy (`CRUD_MODE`)**: The `CRUD_MODE` env var selects the CRUD implementation injected into the controllers — `default` (original REST repositories, Prisma/Mongoose) or `graphql` (schema-driven resolvers executed via `graphql-js` at `POST /graphql`). `DATABASE_PROVIDER` still selects PostgreSQL/Prisma or MongoDB/Mongoose in both modes, so both the persistence provider and the CRUD layer switch with zero code changes.
 - **Repository Pattern + DI**: `UserController`, `AuthController` and `ClientController` receive `IUserRepository`/`IClientRepository` via constructor injection. Factories (`src/factories/`) wire the concrete Prisma or Mongo implementation, keeping controllers fully decoupled from the database layer (Dependency Inversion).
 - **Use Case Layer**: Business logic encapsulated in dedicated Use Cases (`LoginUseCase`, `RegisterStartUseCase`, `RegisterCompleteUseCase`, `ResendRegisterTokenUseCase`, `ForgotPasswordUseCase`, `ResetPasswordUseCase`) following the Single Responsibility Principle.
 - **API / Worker Separation**: The report worker runs in an independent Node process (`npm run start:workers`), consuming jobs from the Redis queue while the API remains responsive.
@@ -419,6 +421,7 @@ The schema includes the following relational entities:
 - **User CRUD**: List (paginated with `page`/`limit`), find by ID, find by email (`GET /users/email/:email`), update, delete — all via Repository Pattern with automatic password stripping.
 - **Client CRUD**: Full CRUD with pagination and email lookup, via `IClientRepository`.
 - **Dual Database Support**: Same interfaces, two implementations — PostgreSQL/Prisma and MongoDB/Mongoose — switchable via `DATABASE_PROVIDER`.
+- **GraphQL CRUD Layer**: Full Users & Clients CRUD exposed at `POST /graphql` (schema SDL + resolvers + custom executor). Available in both PostgreSQL and MongoDB, selected by `DATABASE_PROVIDER`; activated app-wide via `CRUD_MODE="graphql"`. Responses include `extensions: { provider, crudMode }` for easy mode verification.
 - **Task Modeling & Async Reports**: Background data generation — the API enqueues a job in BullMQ (202 Accepted), and the worker processes it independently (updates task status: `todo → in_progress → done`).
 - **Bull Board Dashboard**: Admin UI at `/admin/queues` for real-time monitoring of the `relatorios-queue`.
 - **Automated Seed**: Realistic mock data with @faker-js/faker (`npm run db:seed`).
@@ -448,6 +451,7 @@ The schema includes the following relational entities:
 | `PUT`    | `/clients/:id`                 | Update client                                                          | No         |
 | `DELETE` | `/clients/:id`                 | Delete client                                                          | No         |
 | `POST`   | `/api/relatorio`               | Trigger async report generation (202 Accepted + `taskId`)              | No         |
+| `POST`   | `/graphql`                     | GraphQL endpoint — full Users & Clients CRUD (body: `{ query, variables }`) | No    |
 | `GET`    | `/admin/queues/*`              | Bull Board dashboard                                                   | No         |
 
 ---
@@ -456,8 +460,9 @@ The schema includes the following relational entities:
 
 | Pattern                   | Where                                                                                                    | Benefit                                                                     |
 | ------------------------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| **Repository**            | `IUserRepository` → `PrismaUserRepository`/`MongoUserRepository`; `IClientRepository` → `PrismaClientRepository`/`MongoClientRepository` | Isolates data access logic; swap ORM/database without impacting controllers |
-| **Dependency Injection**  | `user-factory.ts`, `client-factory.ts` wire repositories into controllers (chosen by `DATABASE_PROVIDER`) | Facilitates testing with in-memory mocks; adheres to SOLID DIP              |
+| **Repository**            | `IUserRepository` → `PrismaUserRepository`/`MongoUserRepository`/`GraphQLUserRepository`; `IClientRepository` → `PrismaClientRepository`/`MongoClientRepository`/`GraphQLClientRepository` | Isolates data access logic; swap ORM/database without impacting controllers |
+| **Dependency Injection**  | `user-factory.ts`, `client-factory.ts` wire repositories into controllers (chosen by `DATABASE_PROVIDER` + `CRUD_MODE`) | Facilitates testing with in-memory mocks; adheres to SOLID DIP              |
+| **Strategy Pattern**      | `CRUD_MODE` env var: `default` → REST repositories, `graphql` → `GraphQLUserRepository`/`GraphQLClientRepository` (same interfaces) | Switch the entire CRUD layer via configuration, without code changes        |
 | **Use Case**              | `LoginUseCase`, `RegisterStartUseCase`, `RegisterCompleteUseCase`, `ResendRegisterTokenUseCase`, `ForgotPasswordUseCase`, `ResetPasswordUseCase` | Encapsulates business logic; each class handles one operation               |
 | **Single Responsibility** | Controllers handle HTTP, Use Cases handle business, Repositories handle data                             | Cohesive and independently testable code                                    |
 | **Modular Organization**  | `src/modules/{auth,users,clients,reports}/`                                                              | Domain-driven structure; each module owns its routes, controllers, services |
@@ -559,6 +564,9 @@ The API will be available at `http://localhost:3000`.
 PORT=3000
 NODE_ENV=development
 
+# CRUD implementation: default (REST repositories) | graphql
+CRUD_MODE=default
+
 # PostgreSQL (padrão)
 DATABASE_PROVIDER=postgres
 DB_HOST=db
@@ -645,8 +653,8 @@ npm test
     │   ├── ⚙️ env.ts                    # Env var validation & export
     │   └── 🔗 redisConfig.ts            # Redis connection config
     ├── 📂 factories/
-    │   ├── 🔧 user-factory.ts           # DI factory: Prisma|Mongo User repo → controllers
-    │   └── 🔧 client-factory.ts         # DI factory: Prisma|Mongo Client repo → controllers
+    │   ├── 🔧 user-factory.ts           # DI factory: Prisma|Mongo|GraphQL User repo → controllers
+    │   └── 🔧 client-factory.ts         # DI factory: Prisma|Mongo|GraphQL Client repo → controllers
     ├── 📂 lib/
     │   ├── 📧 mailer.ts                 # Nodemailer transporter + Mailer class
     │   ├── 🍃 mongo.ts                  # Mongoose connection + Counter (auto-increment IDs)
@@ -668,6 +676,8 @@ npm test
     │   │   │   ├── 🍃 mongo/
     │   │   │   │   ├── 📄 client.mongo.model.ts        # Mongoose Client schema
     │   │   │   │   └── 💾 client.mongo.repository.ts   # Concrete MongoDB implementation
+    │   │   │   ├── 🎁 graphql/
+    │   │   │   │   └── 💾 client.graphql.repository.ts # GraphQL implementation (postgres | mongo)
     │   │   │   └── 📄 client.repository.interface.ts   # IClientRepository interface
     │   │   ├── 👤 client.controller.ts   # Client CRUD
     │   │   └── 👤 client.routes.ts       # GET/POST/PUT/DELETE /clients
@@ -678,6 +688,8 @@ npm test
     │       │   ├── 🍃 mongo/
     │       │   │   ├── 📄 user.mongo.model.ts           # Mongoose User schema
     │       │   │   └── 💾 user.mongo.repository.ts      # Concrete MongoDB implementation
+    │       │   ├── 🎁 graphql/
+    │       │   │   └── 💾 user.graphql.repository.ts    # GraphQL implementation (postgres | mongo)
     │       │   └── 📄 user.repository.interface.ts      # IUserRepository interface
     │       ├── 📂 useCases/
     │       │   ├── 🔑 LoginUseCase.ts              # Email verification + bcrypt comparison
@@ -697,8 +709,15 @@ npm test
     │   │   ├── ⚠️ AppError.ts            # Base error class (message + statusCode)
     │   │   └── 🗃️ prismaErrorHandler.ts  # Prisma error formatter (P2002, P2025, etc.)
     │   ├── 📂 infra/
+    │   │   ├── 📂 graphql/
+    │   │   │   ├── ⚙️ schema.ts            # GraphQL schema SDL (Users & Clients CRUD)
+    │   │   │   ├── ⚙️ execute.ts           # GraphQL executor (per-provider schema + resolvers)
+    │   │   │   ├── 🎯 graphqlHttp.ts       # Handler for POST /graphql
+    │   │   │   └── 📂 resolvers/
+    │   │   │       ├── 💎 prisma.resolvers.ts   # Root resolvers — PostgreSQL/Prisma
+    │   │   │       └── 🍃 mongo.resolvers.ts    # Root resolvers — MongoDB/Mongoose
     │   │   ├── 📂 http/
-    │   │   │   ├── ⚙️ app.ts             # Express config (CORS, routes, error handler)
+    │   │   │   ├── ⚙️ app.ts             # Express config (CORS, routes, /graphql, error handler)
     │   │   │   └── 🚀 server.ts          # Entry point (server initialization)
     │   │   └── 🏃 workers/
     │   │       └── 🚀 index.ts           # Worker entry point (imports report.worker.ts)
