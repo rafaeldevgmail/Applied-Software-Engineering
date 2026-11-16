@@ -54,6 +54,7 @@ export const schemaString = /* GraphQL */ `
     name: String
     email: String
     password: String
+    password_confirmation: String!
     role: String
     rememberToken: String
     oauth: Boolean
