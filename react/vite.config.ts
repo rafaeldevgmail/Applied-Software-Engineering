@@ -20,7 +20,6 @@ export default defineConfig(({ mode }) => {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
       },
     },
-    // Mantém a mesma porta usada anteriormente pelo Next.js (docker-compose)
     server: {
       host: "0.0.0.0",
       port,
