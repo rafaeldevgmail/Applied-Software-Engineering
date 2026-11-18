@@ -9,27 +9,69 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as HomeRouteImport } from './routes/home'
 
-export interface FileRoutesByFullPath {}
-export interface FileRoutesByTo {}
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeRoute = HomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => rootRouteImport,
+} as any)
+
+export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
+  '/home': typeof HomeRoute
+}
+export interface FileRoutesByTo {
+  '/': typeof IndexRoute
+  '/home': typeof HomeRoute
+}
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/home': typeof HomeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: never
+  fullPaths: '/' | '/home'
   fileRoutesByTo: FileRoutesByTo
-  to: never
-  id: '__root__'
+  to: '/' | '/home'
+  id: '__root__' | '/' | '/home'
   fileRoutesById: FileRoutesById
 }
-export interface RootRouteChildren {}
-
-declare module '@tanstack/react-router' {
-  interface FileRoutesByPath {}
+export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
+  HomeRoute: typeof HomeRoute
 }
 
-const rootRouteChildren: RootRouteChildren = {}
+declare module '@tanstack/react-router' {
+  interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+  }
+}
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  HomeRoute: HomeRoute,
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
